@@ -1,33 +1,89 @@
+import { cssBundleHref } from "@remix-run/css-bundle";
+import "~/tailwind.css";
+import {
+  ActionFunctionArgs,
+  json,
+  LoaderFunctionArgs,
+  type LinksFunction,
+} from "@remix-run/node";
 import {
   Links,
+  LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
+import { getUserId } from "~/.server/auth";
+import { prisma } from "~/.server/db";
+import { getThemeFromCookie, updateTheme } from "~/.server/theme";
+import {
+  updateThemeActionIntent,
+  type Theme,
+} from "./components/ui/ThemeSwitch";
+import { useTheme } from "./hooks";
 
-import "./tailwind.css";
+export function links() {
+  return [
+    ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+    // any other stylesheets you need
+  ];
+}
 
-export const links: LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
-  {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
-  },
-  {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
-  },
-];
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
 
-export function Layout({ children }: { children: React.ReactNode }) {
+  switch (intent) {
+    case updateThemeActionIntent:
+      return updateTheme(formData);
+    default:
+      throw new Response("Invalid intent", { status: 400 });
+  }
+}
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const theme = getThemeFromCookie(request);
+  const userId = await getUserId(request);
+
+  const user = userId
+    ? await prisma.user.findUniqueOrThrow({
+        where: {
+          id: userId,
+        },
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          firstName: true,
+          lastName: true,
+        },
+      })
+    : null;
+
+  const data = {
+    theme: theme as Theme,
+    user,
+  };
+
+  return json(data);
+}
+
+function App() {
   return (
-    <html lang="en">
+    <Document>
+      <Outlet />
+    </Document>
+  );
+}
+
+function Document({ children }: { children: React.ReactNode }) {
+  const theme = useTheme();
+  return (
+    <html lang="en" className={`${theme} bg-background text-foreground`}>
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
       </head>
@@ -35,11 +91,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
         <ScrollRestoration />
         <Scripts />
+        <LiveReload />
       </body>
     </html>
   );
 }
 
-export default function App() {
-  return <Outlet />;
+export default function AppWithProviders() {
+  return <App />;
 }
