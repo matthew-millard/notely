@@ -2,10 +2,10 @@ import { parseWithZod } from '@conform-to/zod';
 import { generateTOTP } from '@epic-web/totp';
 import { ActionFunctionArgs, json, LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { z } from 'zod';
-import { VerifyEmail } from 'react_email/emails';
 import { requireAnonymous } from '~/.server/auth';
 import { prisma } from '~/.server/db';
 import { sendEmail } from '~/.server/email';
+import VerifyEmail from '~/components/emails/verify-email';
 import { SignUpForm } from '~/components/forms';
 import { SignUpSchema } from '~/components/forms/SignUpForm';
 import { getDomainUrl } from '~/utils';
@@ -87,14 +87,7 @@ export async function action({ request }: ActionFunctionArgs) {
     from: 'Notely <no-reply@notely.ca>',
     to: [email],
     subject: 'Verify your email address',
-    react: (
-      <VerifyEmail
-        otp={otp}
-        verifyUrl={verifyUrl.toString()}
-        title="Verify Email"
-        description="We need to verify your email address before allowing you to create an account with us. This quick step ensures the security of your account and a smooth experience for you."
-      />
-    ),
+    react: <VerifyEmail />,
   });
 
   if (response.status !== 200) {

@@ -4,7 +4,7 @@
   "sideEffects": false,
   "type": "module",
   "workspaces": [
-    "./emails/*"
+    "./react_email/*"
   ],
   "scripts": {
     "build": "remix vite:build",
@@ -22,6 +22,7 @@
     "@radix-ui/react-icons": "^1.3.2",
     "@radix-ui/react-label": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.2",
+    "@react-email/render": "^1.0.5",
     "@remix-run/css-bundle": "^2.15.3",
     "@remix-run/express": "^2.15.3",
     "@remix-run/node": "^2.15.3",
