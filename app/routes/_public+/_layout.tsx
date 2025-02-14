@@ -1,9 +1,9 @@
-import { ArrowRightIcon } from "@radix-ui/react-icons";
-import { Link, Outlet } from "@remix-run/react";
-import { useState } from "react";
-import { Drawer, Footer } from "~/components/layouts";
-import { Logo } from "~/components/typography";
-import { Button, HamburgerMenuToggle } from "~/components/ui";
+import { ArrowRightIcon } from '@radix-ui/react-icons';
+import { Link, Outlet } from '@remix-run/react';
+import { useState } from 'react';
+import { Drawer, Footer } from '~/components/layouts';
+import { Logo } from '~/components/typography';
+import { Button, HamburgerMenuToggle } from '~/components/ui';
 
 export default function PublicLayout() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -29,7 +29,7 @@ export default function PublicLayout() {
             </Link>
             <Link to="/login" prefetch="intent">
               <Button variant="ghost">
-                Log in <ArrowRightIcon />{" "}
+                Log in <ArrowRightIcon />{' '}
               </Button>
             </Link>
           </nav>

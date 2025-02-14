@@ -3,13 +3,13 @@ import React from 'react';
 import { Resend } from 'resend';
 
 interface Email {
-  from: 'Notely <no-reply@notely.ca>';
+  from: 'Notely <no-reply@notely.ca>'; // add more sub domains here!
   to: string[];
   subject: string;
-  react: React.ReactElement;
+  reactEmailTemplate: React.ReactElement;
 }
 
-export async function sendEmail({ from, to, subject, react }: Email) {
+export async function sendEmail({ from, to, subject, reactEmailTemplate }: Email) {
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -17,12 +17,12 @@ export async function sendEmail({ from, to, subject, react }: Email) {
       from,
       to,
       subject,
-      react,
+      react: reactEmailTemplate,
     });
 
     return json(data, { status: 200 });
   } catch (error) {
-    console.error(error);
+    console.error('Email error:', error);
     return json({ message: 'An error occured' }, { status: 500 });
   }
 }

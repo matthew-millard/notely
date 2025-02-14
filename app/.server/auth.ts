@@ -1,13 +1,13 @@
-import type { Password, User } from "@prisma/client";
-import { prisma } from "./db";
-import bcrypt from "bcryptjs";
-import { getSession, sessionStorage } from "./session";
-import { SESSION_KEY } from "./config";
-import { redirect } from "react-router";
+import type { Password, User } from '@prisma/client';
+import { redirect } from '@remix-run/node';
+import bcrypt from 'bcryptjs';
+import { SESSION_KEY } from './config';
+import { prisma } from './db';
+import { getSession, sessionStorage } from './session';
 
 interface AuthCredentials {
-  email: User["email"];
-  password: Password["hash"];
+  email: User['email'];
+  password: Password['hash'];
 }
 
 // Cookie Expiration Time
@@ -30,10 +30,7 @@ export async function verifyUserPassword({ email, password }: AuthCredentials) {
     return null;
   }
 
-  const isValid = await bcrypt.compare(
-    password,
-    userWithPassword.password.hash,
-  );
+  const isValid = await bcrypt.compare(password, userWithPassword.password.hash);
 
   if (!isValid) {
     return null;
@@ -70,9 +67,9 @@ export async function logout(request: Request) {
     })
     .catch(() => {});
 
-  throw redirect("/", {
+  throw redirect('/', {
     headers: {
-      "Set-Cookie": await sessionStorage.destroySession(cookieSession),
+      'Set-Cookie': await sessionStorage.destroySession(cookieSession),
     },
   });
 }
@@ -98,7 +95,7 @@ export async function requireUserId(request: Request) {
   const userId = await getUserId(request);
 
   if (!userId) {
-    throw redirect("/login");
+    throw redirect('/login');
   }
 
   return userId;
