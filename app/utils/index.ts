@@ -1,5 +1,6 @@
-import classNames from "./classNames";
-import formatInitials from "./formatInitials";
-import hashPassword from "./hashPassword";
+import classNames from './classNames';
+import formatInitials from './formatInitials';
+import getDomainUrl from './getDomainUrl';
+import hashPassword from './hashPassword';
 
-export { classNames, hashPassword, formatInitials };
+export { classNames, formatInitials, getDomainUrl, hashPassword };
