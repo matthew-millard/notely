@@ -1,8 +1,11 @@
 import { parseWithZod } from '@conform-to/zod';
 import { verifyTOTP } from '@epic-web/totp';
-import { json } from '@remix-run/node';
+import { createCookieSessionStorage, json, redirect } from '@remix-run/node';
 import { z } from 'zod';
+import { TARGET_QUERY_PARAM, VerifySchema } from '~/routes/_auth+/verify';
+import { COOKIE_PREFIX } from './config';
 import { prisma } from './db';
+import { ENV } from './env';
 
 interface Verification {
   code: string;
@@ -10,23 +13,26 @@ interface Verification {
   target: string;
 }
 
-export const TYPE_QUERY_PARAM = 'type';
-export const TARGET_QUERY_PARAM = 'target';
-export const CODE_QUERY_PARAM = 'code';
-export const REDIRECT_TO_QUERY_PARAM = 'redirectTo';
+export const VERIFY_SESSION_KEY = 'email-verification';
 
-const VerifySchema = z.object({
-  [CODE_QUERY_PARAM]: z.string().min(5).max(5),
-  [TYPE_QUERY_PARAM]: z.enum(['sign-up']), // add more types of verification here
-  [TARGET_QUERY_PARAM]: z.string(),
-  [REDIRECT_TO_QUERY_PARAM]: z.string().optional(),
+export const verifySessionStorage = createCookieSessionStorage({
+  cookie: {
+    name: `${COOKIE_PREFIX}_${VERIFY_SESSION_KEY}`,
+    sameSite: 'lax',
+    path: '/',
+    httpOnly: true,
+    maxAge: 60 * 10, // 10 minutes
+    secrets: ENV.SESSION_SECRET.split(','),
+    secure: process.env.NODE_ENV === 'production',
+  },
 });
 
-export async function validateRequest(request: Request, body: URLSearchParams) {
+export async function validateRequest(request: Request, body: URLSearchParams | FormData) {
   const submission = await parseWithZod(body, {
     async: true,
     schema: VerifySchema.transform(async ({ code, target, type }, ctx) => {
       const codeIsValid = await isCodeValid({ code, type, target });
+      console.log('here!');
 
       if (!codeIsValid) {
         ctx.addIssue({
@@ -34,6 +40,7 @@ export async function validateRequest(request: Request, body: URLSearchParams) {
           code: z.ZodIssueCode.custom,
           message: 'Invalid code',
         });
+        return z.NEVER;
       }
       return { code, target, type };
     }),
@@ -48,7 +55,7 @@ export async function validateRequest(request: Request, body: URLSearchParams) {
   switch (type) {
     case 'sign-up': {
       await deleteVerification({ target, type });
-      return handleSignUpVerification();
+      return handleSignUpVerification({ request, target });
     }
   }
 }
@@ -94,4 +101,13 @@ export async function deleteVerification({ target, type }: Omit<Verification, 'c
   });
 }
 
-export async function handleSignUpVerification() {} // continue from here!
+export async function handleSignUpVerification({ request, target }: { request: Request; target: string }) {
+  const verifySession = await verifySessionStorage.getSession(request.headers.get('cookie'));
+  verifySession.set(TARGET_QUERY_PARAM, target);
+
+  return redirect('/complete-sign-up', {
+    headers: {
+      'Set-Cookie': await verifySessionStorage.commitSession(verifySession),
+    },
+  });
+}

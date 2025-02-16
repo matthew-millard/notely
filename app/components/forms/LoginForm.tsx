@@ -1,48 +1,35 @@
-import { getFormProps, getInputProps, useForm } from "@conform-to/react";
-import { getZodConstraint, parseWithZod } from "@conform-to/zod";
-import { Form, Link, useActionData } from "@remix-run/react";
-import { z } from "zod";
-import { classNames as cn } from "~/utils";
-import { Button, FieldError, FormErrors, Input, Label } from "../ui";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../ui/Card";
+import { getFormProps, getInputProps, type SubmissionResult, useForm } from '@conform-to/react';
+import { getZodConstraint, parseWithZod } from '@conform-to/zod';
+import { Form, Link, useActionData } from '@remix-run/react';
+import React from 'react';
+import { z } from 'zod';
+import { classNames as cn } from '~/utils';
+import { Button, FieldError, FormErrors, Input, Label } from '../ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 
 export const LoginSchema = z.object({
   email: z.string().email(),
   password: z.string(),
 });
 
-export default function LoginForm({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+export default function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const [form, fields] = useForm({
-    id: "login-form",
-    lastResult: useActionData(),
+    id: 'login-form',
+    lastResult: useActionData<SubmissionResult<string[]>>(),
     constraint: getZodConstraint(LoginSchema),
-    shouldValidate: "onSubmit",
-    shouldRevalidate: "onInput",
+    shouldValidate: 'onSubmit',
+    shouldRevalidate: 'onInput',
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: LoginSchema });
     },
   });
 
   return (
-    <div
-      className={cn("flex w-full max-w-md flex-col gap-6", className)}
-      {...props}
-    >
+    <div className={cn('flex w-full max-w-md flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>
-            Login with your Meta or Google account
-          </CardDescription>
+          <CardDescription>Login with your Meta or Google account</CardDescription>
         </CardHeader>
         <CardContent>
           <Form method="POST" {...getFormProps(form)}>
@@ -68,16 +55,14 @@ export default function LoginForm({
                 </Button>
               </div>
               <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-                <span className="relative z-10 bg-background px-2 text-muted-foreground">
-                  Or continue with
-                </span>
+                <span className="relative z-10 bg-background px-2 text-muted-foreground">Or continue with</span>
               </div>
               <div className="grid gap-6">
                 <div className="grid gap-2">
                   <Label htmlFor={fields.email.id}>Email</Label>
                   <Input
                     {...getInputProps(fields.email, {
-                      type: "email",
+                      type: 'email',
                     })}
                     placeholder="name@example.com"
                     autoComplete="off"
@@ -87,16 +72,11 @@ export default function LoginForm({
                 <div className="-mt-1 grid gap-2">
                   <div className="flex items-center">
                     <Label htmlFor={fields.password.id}>Password</Label>
-                    <Link
-                      to="/forgot-password"
-                      className="ml-auto text-sm underline-offset-4 hover:underline"
-                    >
+                    <Link to="/forgot-password" className="ml-auto text-sm underline-offset-4 hover:underline">
                       Forgot your password?
                     </Link>
                   </div>
-                  <Input
-                    {...getInputProps(fields.password, { type: "password" })}
-                  />
+                  <Input {...getInputProps(fields.password, { type: 'password' })} />
                   <FieldError field={fields.password} />
                 </div>
               </div>
@@ -106,7 +86,7 @@ export default function LoginForm({
                 </Button>
                 <FormErrors errors={form.errors} errorId={form.errorId} />
                 <div className="text-center text-sm">
-                  Don&apos;t have an account?{" "}
+                  Don&apos;t have an account?{' '}
                   <Link to="/sign-up" className="underline underline-offset-4">
                     Sign up
                   </Link>

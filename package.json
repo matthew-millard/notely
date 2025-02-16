@@ -7,11 +7,10 @@
     "./react_email/*"
   ],
   "scripts": {
-    "build": "remix vite:build",
-    "dev": "node ./server.js",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
-    "start": "cross-env NODE_ENV=production node ./server.js",
-    "typecheck": "tsc"
+    "dev": "remix vite:dev",
+    "build": "remix vite:build",
+    "start": "cross-env NODE_ENV=production node ./server.js"
   },
   "dependencies": {
     "@conform-to/react": "^1.2.2",
@@ -33,7 +32,9 @@
     "compression": "^1.7.4",
     "cross-env": "^7.0.3",
     "express": "^4.19.2",
+    "input-otp": "^1.4.2",
     "isbot": "^4.1.0",
+    "lucide-react": "^0.475.0",
     "morgan": "^1.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
