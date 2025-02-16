@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { requireAnonymous } from '~/.server/auth';
 import { prisma } from '~/.server/db';
 import { sendEmail } from '~/.server/email';
-import { CODE_QUERY_PARAM, TARGET_QUERY_PARAM, TYPE_QUERY_PARAM } from '~/.server/verify';
+import { CODE_QUERY_PARAM, TARGET_QUERY_PARAM, TYPE_QUERY_PARAM } from '~/.server/verification';
 import { VerifyEmail } from '~/components/emails';
 import { SignUpForm } from '~/components/forms';
 import { SignUpSchema } from '~/components/forms/SignUpForm';

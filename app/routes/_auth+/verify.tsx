@@ -1,6 +1,6 @@
 import { LoaderFunctionArgs } from '@remix-run/node';
 import { requireAnonymous } from '~/.server/auth';
-import { CODE_QUERY_PARAM, validateRequest } from '~/.server/verify';
+import { CODE_QUERY_PARAM, validateRequest } from '~/.server/verification';
 import { H1 } from '~/components/typography';
 
 export async function loader({ request }: LoaderFunctionArgs) {
