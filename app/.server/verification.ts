@@ -34,9 +34,8 @@ export async function validateRequest(request: Request, body: URLSearchParams) {
           code: z.ZodIssueCode.custom,
           message: 'Invalid code',
         });
-
-        return;
       }
+      return { code, target, type };
     }),
   });
 
@@ -44,25 +43,12 @@ export async function validateRequest(request: Request, body: URLSearchParams) {
     return json({ result: submission.reply() }, { status: submission.status === 'error' ? 400 : 200 });
   }
 
-  const submissionValue = submission.value;
+  const { target, type } = submission.value;
 
-  console.log('submissionValue', submissionValue);
-
-  async function deleteVerification() {
-    await prisma.verification.delete({
-      where: {
-        target_type: {
-          target: submissionValue[TARGET_QUERY_PARAM],
-          type: submissionValue[TYPE_QUERY_PARAM],
-        },
-      },
-    });
-  }
-
-  switch (submissionValue[TYPE_QUERY_PARAM]) {
+  switch (type) {
     case 'sign-up': {
-      await deleteVerification();
-      return {};
+      await deleteVerification({ target, type });
+      return handleSignUpVerification();
     }
   }
 }
@@ -96,3 +82,16 @@ export async function isCodeValid({ code, type, target }: Verification) {
     return true;
   }
 }
+
+export async function deleteVerification({ target, type }: Omit<Verification, 'code'>) {
+  await prisma.verification.delete({
+    where: {
+      target_type: {
+        target,
+        type,
+      },
+    },
+  });
+}
+
+export async function handleSignUpVerification() {} // continue from here!
