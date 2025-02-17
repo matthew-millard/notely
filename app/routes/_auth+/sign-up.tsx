@@ -45,10 +45,10 @@ export async function action({ request }: ActionFunctionArgs) {
   const email = submission.value;
 
   const { algorithm, charSet, digits, period, otp, secret } = await generateTOTP({
-    digits: 5,
+    digits: 6,
     algorithm: 'SHA-256',
     period: 15 * 60, // 15 minutes
-    charSet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+    charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
   });
 
   const type = 'sign-up';

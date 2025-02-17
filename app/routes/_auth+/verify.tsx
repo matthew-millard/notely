@@ -4,14 +4,14 @@ import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { useActionData, useFetcher, useSearchParams } from '@remix-run/react';
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
-import { Loader, Loader2, LoaderCircle } from 'lucide-react';
+import { LoaderCircle } from 'lucide-react';
 import { useState } from 'react';
 import { z } from 'zod';
 import { validateRequest } from '~/.server/verification';
 import { Small } from '~/components/typography';
 import { Button, FieldError, Label } from '~/components/ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/Card';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '~/components/ui/OneTimePasswordInput';
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '~/components/ui/OneTimePasswordInput';
 
 export const TYPE_QUERY_PARAM = 'type';
 export const TARGET_QUERY_PARAM = 'target';
@@ -19,7 +19,7 @@ export const CODE_QUERY_PARAM = 'code';
 export const REDIRECT_TO_QUERY_PARAM = 'redirectTo';
 
 export const VerifySchema = z.object({
-  [CODE_QUERY_PARAM]: z.string().min(5).max(5),
+  [CODE_QUERY_PARAM]: z.string().min(6).max(6),
   [TYPE_QUERY_PARAM]: z.enum(['sign-up']), // add more types of verification here
   [TARGET_QUERY_PARAM]: z.string(),
   [REDIRECT_TO_QUERY_PARAM]: z.string().optional(),
@@ -86,7 +86,7 @@ export default function VerifyRoute() {
             </Label>
             <InputOTP
               {...getInputProps(fields[CODE_QUERY_PARAM], { type: 'text' })}
-              maxLength={5}
+              maxLength={6}
               autoFocus={true}
               autoComplete="one-time-code"
               pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
@@ -96,9 +96,16 @@ export default function VerifyRoute() {
               <InputOTPGroup>
                 <InputOTPSlot index={0} />
                 <InputOTPSlot index={1} />
+              </InputOTPGroup>
+              <InputOTPSeparator />
+              <InputOTPGroup>
                 <InputOTPSlot index={2} />
                 <InputOTPSlot index={3} />
+              </InputOTPGroup>
+              <InputOTPSeparator />
+              <InputOTPGroup>
                 <InputOTPSlot index={4} />
+                <InputOTPSlot index={5} />
               </InputOTPGroup>
             </InputOTP>
             <FieldError field={fields[CODE_QUERY_PARAM]} />
