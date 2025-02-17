@@ -1,44 +1,30 @@
-import { cssBundleHref } from "@remix-run/css-bundle";
-import "~/tailwind.css";
-import {
-  ActionFunctionArgs,
-  json,
-  LoaderFunctionArgs,
-  type LinksFunction,
-} from "@remix-run/node";
-import {
-  Links,
-  LiveReload,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from "@remix-run/react";
-import { getUserId } from "~/.server/auth";
-import { prisma } from "~/.server/db";
-import { getThemeFromCookie, updateTheme } from "~/.server/theme";
-import {
-  updateThemeActionIntent,
-  type Theme,
-} from "./components/ui/ThemeSwitch";
-import { useTheme } from "./hooks";
+import { cssBundleHref } from '@remix-run/css-bundle';
+import '~/tailwind.css';
+import { ActionFunctionArgs, json, LoaderFunctionArgs } from '@remix-run/node';
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react';
+import React from 'react';
+import { getUserId } from '~/.server/auth';
+import { prisma } from '~/.server/db';
+import { getThemeFromCookie, updateTheme } from '~/.server/theme';
+import { updateThemeActionIntent, type Theme } from './components/ui/ThemeSwitch';
+import { useTheme } from './hooks';
 
 export function links() {
   return [
-    ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+    ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
     // any other stylesheets you need
   ];
 }
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  const intent = formData.get("intent");
+  const intent = formData.get('intent');
 
   switch (intent) {
     case updateThemeActionIntent:
       return updateTheme(formData);
     default:
-      throw new Response("Invalid intent", { status: 400 });
+      throw new Response('Invalid intent', { status: 400 });
   }
 }
 
@@ -91,7 +77,6 @@ function Document({ children }: { children: React.ReactNode }) {
         {children}
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
       </body>
     </html>
   );
