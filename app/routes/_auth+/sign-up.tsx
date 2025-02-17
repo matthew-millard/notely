@@ -30,6 +30,8 @@ export async function action({ request }: ActionFunctionArgs) {
           path: ['email'],
           message: 'Email is already in use',
         });
+
+        return z.NEVER;
       }
 
       return email;
@@ -48,7 +50,7 @@ export async function action({ request }: ActionFunctionArgs) {
     digits: 6,
     algorithm: 'SHA-256',
     period: 15 * 60, // 15 minutes
-    charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
+    charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789', // Removed I, O, and 0 to help prevent user confusion
   });
 
   const type = 'sign-up';
@@ -57,7 +59,7 @@ export async function action({ request }: ActionFunctionArgs) {
   redirectToUrl.searchParams.set(TARGET_QUERY_PARAM, email);
 
   const verifyUrl = new URL(redirectToUrl);
-  verifyUrl.searchParams.set(CODE_QUERY_PARAM, otp);
+  verifyUrl.searchParams.set(CODE_QUERY_PARAM, otp); // Magic link
 
   const verificationData = {
     type,
