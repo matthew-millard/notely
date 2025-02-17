@@ -2,25 +2,28 @@ import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import type { SubmissionResult } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
-import { useActionData, useFetcher, useSearchParams } from '@remix-run/react';
+import { Form, useActionData, useSearchParams } from '@remix-run/react';
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
-import { Loader, Loader2, LoaderCircle } from 'lucide-react';
+import { LoaderCircle } from 'lucide-react';
 import { useState } from 'react';
 import { z } from 'zod';
 import { validateRequest } from '~/.server/verification';
-import { Small } from '~/components/typography';
 import { Button, FieldError, Label } from '~/components/ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/Card';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '~/components/ui/OneTimePasswordInput';
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '~/components/ui/OneTimePasswordInput';
+import { useDelayedIsPending } from '~/hooks';
 
+export const TYPES = ['sign-up'] as const; // add more types of verification here
+const VerificationTypeSchema = z.enum(TYPES);
 export const TYPE_QUERY_PARAM = 'type';
 export const TARGET_QUERY_PARAM = 'target';
 export const CODE_QUERY_PARAM = 'code';
 export const REDIRECT_TO_QUERY_PARAM = 'redirectTo';
+export type VerificationTypes = z.infer<typeof VerificationTypeSchema>;
 
 export const VerifySchema = z.object({
-  [CODE_QUERY_PARAM]: z.string().min(5).max(5),
-  [TYPE_QUERY_PARAM]: z.enum(['sign-up']), // add more types of verification here
+  [CODE_QUERY_PARAM]: z.string().min(6).max(6),
+  [TYPE_QUERY_PARAM]: VerificationTypeSchema,
   [TARGET_QUERY_PARAM]: z.string(),
   [REDIRECT_TO_QUERY_PARAM]: z.string().optional(),
 });
@@ -46,9 +49,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function VerifyRoute() {
   const [searchParams] = useSearchParams();
   const [validationCode, setValidationCode] = useState('');
-  const fetcher = useFetcher<typeof action>();
-  const invalidCode = fetcher.data?.status === 'error';
-  const isSubmitting = fetcher.state !== 'idle';
+  const isPending = useDelayedIsPending();
 
   const [form, fields] = useForm({
     id: 'one-time-password-form',
@@ -77,7 +78,7 @@ export default function VerifyRoute() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <fetcher.Form method="POST" {...getFormProps(form)} className="flex flex-col items-center gap-y-3 pt-3">
+          <Form method="POST" {...getFormProps(form)} className="flex flex-col items-center gap-y-3 pt-3">
             <input {...getInputProps(fields[TARGET_QUERY_PARAM], { type: 'hidden' })} />
             <input {...getInputProps(fields[TYPE_QUERY_PARAM], { type: 'hidden' })} />
             <input {...getInputProps(fields[REDIRECT_TO_QUERY_PARAM], { type: 'hidden' })} />
@@ -86,35 +87,34 @@ export default function VerifyRoute() {
             </Label>
             <InputOTP
               {...getInputProps(fields[CODE_QUERY_PARAM], { type: 'text' })}
-              maxLength={5}
+              maxLength={6}
               autoFocus={true}
               autoComplete="one-time-code"
               pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
               value={validationCode}
               onChange={curr => setValidationCode(curr)}
+              disabled={isPending}
             >
               <InputOTPGroup>
                 <InputOTPSlot index={0} />
                 <InputOTPSlot index={1} />
+              </InputOTPGroup>
+              <InputOTPSeparator />
+              <InputOTPGroup>
                 <InputOTPSlot index={2} />
                 <InputOTPSlot index={3} />
+              </InputOTPGroup>
+              <InputOTPSeparator />
+              <InputOTPGroup>
                 <InputOTPSlot index={4} />
+                <InputOTPSlot index={5} />
               </InputOTPGroup>
             </InputOTP>
             <FieldError field={fields[CODE_QUERY_PARAM]} />
-            <Button type="submit" variant="secondary" className="w-24">
-              {isSubmitting ? <LoaderCircle className="animate-spin" /> : 'Submit'}
+            <Button type="submit" disabled={isPending} variant="secondary" className="w-24">
+              {isPending ? <LoaderCircle className="animate-spin" /> : 'Submit'}
             </Button>
-            {invalidCode ? (
-              fetcher.data?.error?.[CODE_QUERY_PARAM]?.map(error => (
-                <Small className="text-foreground-destructive text-xs" key={error}>
-                  {error}
-                </Small>
-              ))
-            ) : (
-              <Small className="text-xs">&nbsp;</Small>
-            )}
-          </fetcher.Form>
+          </Form>
         </CardContent>
       </Card>
     </main>
