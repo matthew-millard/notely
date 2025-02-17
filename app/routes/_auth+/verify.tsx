@@ -11,7 +11,7 @@ import { validateRequest } from '~/.server/verification';
 import { Button, FieldError, Label } from '~/components/ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/Card';
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '~/components/ui/OneTimePasswordInput';
-import { useIsPending } from '~/hooks/useIsPending';
+import { useDelayedIsPending } from '~/hooks';
 
 export const TYPES = ['sign-up'] as const; // add more types of verification here
 const VerificationTypeSchema = z.enum(TYPES);
@@ -49,7 +49,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function VerifyRoute() {
   const [searchParams] = useSearchParams();
   const [validationCode, setValidationCode] = useState('');
-  const isPending = useIsPending();
+  const isPending = useDelayedIsPending();
 
   const [form, fields] = useForm({
     id: 'one-time-password-form',

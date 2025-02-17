@@ -112,7 +112,7 @@ export async function handleSignUpVerification({ request, target }: { request: R
   const verifySession = await verifySessionStorage.getSession(request.headers.get('cookie'));
   verifySession.set(TARGET_QUERY_PARAM, target);
 
-  return redirect('/complete-sign-up', {
+  return redirect('/complete-profile', {
     headers: {
       'Set-Cookie': await verifySessionStorage.commitSession(verifySession),
     },
