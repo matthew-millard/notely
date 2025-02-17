@@ -1,16 +1,11 @@
-import { parseWithZod } from "@conform-to/zod";
-import {
-  ActionFunctionArgs,
-  json,
-  LoaderFunctionArgs,
-  redirect,
-} from "@remix-run/node";
-import { z } from "zod";
-import { login, requireAnonymous } from "~/.server/auth";
-import { SESSION_KEY } from "~/.server/config";
-import { getSession, sessionStorage } from "~/.server/session";
-import { LoginForm } from "~/components/forms";
-import { LoginSchema } from "~/components/forms/LoginForm";
+import { parseWithZod } from '@conform-to/zod';
+import { ActionFunctionArgs, json, LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { z } from 'zod';
+import { login, requireAnonymous } from '~/.server/auth';
+import { SESSION_KEY } from '~/.server/config';
+import { getSession, sessionStorage } from '~/.server/session';
+import { LoginForm } from '~/components/forms';
+import { LoginSchema } from '~/components/forms/LoginForm';
 
 export async function action({ request }: ActionFunctionArgs) {
   await requireAnonymous(request);
@@ -24,7 +19,7 @@ export async function action({ request }: ActionFunctionArgs) {
       if (!user) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Invalid username or password",
+          message: 'Invalid email or password',
         });
         return z.NEVER;
       }
@@ -33,13 +28,13 @@ export async function action({ request }: ActionFunctionArgs) {
     }),
   });
 
-  if (submission.status !== "success") {
+  if (submission.status !== 'success') {
     return json(
       submission.reply({
-        formErrors: ["Invalid email or password."],
-        hideFields: ["password"],
+        formErrors: ['Submission failed.'],
+        hideFields: ['password'],
       }),
-      { status: submission.status === "error" ? 400 : 200 },
+      { status: submission.status === 'error' ? 400 : 200 }
     );
   }
 
@@ -50,7 +45,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   return redirect(`/${user.username}`, {
     headers: {
-      "Set-Cookie": await sessionStorage.commitSession(cookieSession, {
+      'Set-Cookie': await sessionStorage.commitSession(cookieSession, {
         expires: session.expirationDate, // Remember me permanently set
       }),
     },

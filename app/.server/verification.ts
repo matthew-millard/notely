@@ -2,7 +2,7 @@ import { parseWithZod } from '@conform-to/zod';
 import { verifyTOTP } from '@epic-web/totp';
 import { createCookieSessionStorage, json, redirect } from '@remix-run/node';
 import { z } from 'zod';
-import { TARGET_QUERY_PARAM, VerifySchema } from '~/routes/_auth+/verify';
+import { CODE_QUERY_PARAM, TARGET_QUERY_PARAM, TYPE_QUERY_PARAM, VerifySchema } from '~/routes/_auth+/verify';
 import { COOKIE_PREFIX } from './config';
 import { prisma } from './db';
 import { ENV } from './env';
@@ -30,24 +30,31 @@ export const verifySessionStorage = createCookieSessionStorage({
 export async function validateRequest(request: Request, body: URLSearchParams | FormData) {
   const submission = await parseWithZod(body, {
     async: true,
-    schema: VerifySchema.transform(async ({ code, target, type }, ctx) => {
-      const codeIsValid = await isCodeValid({ code, type, target });
+    schema: VerifySchema.transform(async (data, ctx) => {
+      const codeIsValid = await isCodeValid({
+        code: data[CODE_QUERY_PARAM],
+        type: data[TYPE_QUERY_PARAM],
+        target: data[TARGET_QUERY_PARAM],
+      });
       console.log('here!');
 
       if (!codeIsValid) {
         ctx.addIssue({
-          path: ['code'],
+          path: [CODE_QUERY_PARAM],
           code: z.ZodIssueCode.custom,
           message: 'Invalid code',
         });
+
         return z.NEVER;
       }
-      return { code, target, type };
+      return data;
     }),
   });
 
   if (submission.status !== 'success') {
-    return json({ result: submission.reply() }, { status: submission.status === 'error' ? 400 : 200 });
+    return json(submission.reply({ hideFields: [CODE_QUERY_PARAM] }), {
+      status: submission.status === 'error' ? 400 : 200,
+    });
   }
 
   const { target, type } = submission.value;

@@ -64,6 +64,7 @@ export default function LoginForm({ className, ...props }: React.ComponentPropsW
                     {...getInputProps(fields.email, {
                       type: 'email',
                     })}
+                    autoFocus
                     placeholder="name@example.com"
                     autoComplete="off"
                   />

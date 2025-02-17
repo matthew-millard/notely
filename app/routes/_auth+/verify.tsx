@@ -2,11 +2,14 @@ import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import type { SubmissionResult } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
-import { Form, useActionData, useSearchParams } from '@remix-run/react';
+import { useActionData, useFetcher, useSearchParams } from '@remix-run/react';
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
+import { Loader, Loader2, LoaderCircle } from 'lucide-react';
+import { useState } from 'react';
 import { z } from 'zod';
 import { validateRequest } from '~/.server/verification';
-import { Button, FieldError, FormErrors, Label } from '~/components/ui';
+import { Small } from '~/components/typography';
+import { Button, FieldError, Label } from '~/components/ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/Card';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '~/components/ui/OneTimePasswordInput';
 
@@ -24,8 +27,8 @@ export const VerifySchema = z.object({
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  console.log(formData.get(CODE_QUERY_PARAM));
-  return validateRequest(request, formData);
+
+  return await validateRequest(request, formData);
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -42,6 +45,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function VerifyRoute() {
   const [searchParams] = useSearchParams();
+  const [validationCode, setValidationCode] = useState('');
+  const fetcher = useFetcher<typeof action>();
+  const invalidCode = fetcher.data?.status === 'error';
+  const isSubmitting = fetcher.state !== 'idle';
 
   const [form, fields] = useForm({
     id: 'one-time-password-form',
@@ -52,17 +59,16 @@ export default function VerifyRoute() {
     defaultValue: {
       [TARGET_QUERY_PARAM]: searchParams.get(TARGET_QUERY_PARAM) ?? '',
       [TYPE_QUERY_PARAM]: searchParams.get(TYPE_QUERY_PARAM) ?? '',
-      ...(searchParams.has(REDIRECT_TO_QUERY_PARAM)
-        ? { [REDIRECT_TO_QUERY_PARAM]: searchParams.get(REDIRECT_TO_QUERY_PARAM) }
-        : {}),
+      [REDIRECT_TO_QUERY_PARAM]: searchParams.get(REDIRECT_TO_QUERY_PARAM),
     },
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: VerifySchema });
     },
   });
+
   return (
-    <main className="flex-grow mx-auto py-44 sm:py-64">
-      <Card className="w-full max-w-lg">
+    <main className="flex-grow mx-auto py-20 sm:py-56">
+      <Card className="w-full max-w-lg pt-6 sm:px-6">
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Please verify your account</CardTitle>
           <CardDescription>
@@ -71,26 +77,21 @@ export default function VerifyRoute() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Form method="POST" {...getFormProps(form)} className="flex flex-col items-center gap-y-3 pt-3">
-            <input
-              {...getInputProps(fields[TARGET_QUERY_PARAM], { type: 'hidden' })}
-              key={fields[TARGET_QUERY_PARAM].id}
-            />
-            <input {...getInputProps(fields[TYPE_QUERY_PARAM], { type: 'hidden' })} key={fields[TYPE_QUERY_PARAM].id} />
-            <input
-              {...getInputProps(fields[REDIRECT_TO_QUERY_PARAM], { type: 'hidden' })}
-              key={fields[REDIRECT_TO_QUERY_PARAM].id}
-            />
-
+          <fetcher.Form method="POST" {...getFormProps(form)} className="flex flex-col items-center gap-y-3 pt-3">
+            <input {...getInputProps(fields[TARGET_QUERY_PARAM], { type: 'hidden' })} />
+            <input {...getInputProps(fields[TYPE_QUERY_PARAM], { type: 'hidden' })} />
+            <input {...getInputProps(fields[REDIRECT_TO_QUERY_PARAM], { type: 'hidden' })} />
             <Label htmlFor={fields[CODE_QUERY_PARAM].id} className="justify-start">
-              Enter one-time password
+              Enter one-time passcode
             </Label>
             <InputOTP
-              maxLength={5}
               {...getInputProps(fields[CODE_QUERY_PARAM], { type: 'text' })}
-              autoFocus
+              maxLength={5}
+              autoFocus={true}
+              autoComplete="one-time-code"
               pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
-              key={fields[CODE_QUERY_PARAM].id}
+              value={validationCode}
+              onChange={curr => setValidationCode(curr)}
             >
               <InputOTPGroup>
                 <InputOTPSlot index={0} />
@@ -101,9 +102,19 @@ export default function VerifyRoute() {
               </InputOTPGroup>
             </InputOTP>
             <FieldError field={fields[CODE_QUERY_PARAM]} />
-            <Button type="submit">Submit</Button>
-            <FormErrors errors={form.errors} errorId={form.errorId} />
-          </Form>
+            <Button type="submit" variant="secondary" className="w-24">
+              {isSubmitting ? <LoaderCircle className="animate-spin" /> : 'Submit'}
+            </Button>
+            {invalidCode ? (
+              fetcher.data?.error?.[CODE_QUERY_PARAM]?.map(error => (
+                <Small className="text-foreground-destructive text-xs" key={error}>
+                  {error}
+                </Small>
+              ))
+            ) : (
+              <Small className="text-xs">&nbsp;</Small>
+            )}
+          </fetcher.Form>
         </CardContent>
       </Card>
     </main>
