@@ -40,7 +40,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
         select: {
           id: true,
           email: true,
-          username: true,
           firstName: true,
           lastName: true,
         },

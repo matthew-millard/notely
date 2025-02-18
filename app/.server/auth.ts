@@ -1,12 +1,15 @@
 import type { Password, User } from '@prisma/client';
 import { redirect } from '@remix-run/node';
 import bcrypt from 'bcryptjs';
+import { hashPassword } from '~/utils';
 import { SESSION_KEY } from './config';
 import { prisma } from './db';
 import { getSession, sessionStorage } from './session';
 
 interface AuthCredentials {
   email: User['email'];
+  firstName: User['firstName'];
+  lastName: User['lastName'];
   password: Password['hash'];
 }
 
@@ -18,12 +21,12 @@ export function getSessionExpirationDate() {
   return expirationDate;
 }
 
-export async function verifyUserPassword({ email, password }: AuthCredentials) {
+export async function verifyUserPassword({ email, password }: Pick<AuthCredentials, 'email' | 'password'>) {
   const userWithPassword = await prisma.user.findUnique({
     where: {
       email,
     },
-    select: { id: true, password: { select: { hash: true } }, username: true },
+    select: { id: true, password: { select: { hash: true } } },
   });
 
   if (!userWithPassword || !userWithPassword.password) {
@@ -36,10 +39,37 @@ export async function verifyUserPassword({ email, password }: AuthCredentials) {
     return null;
   }
 
-  return { id: userWithPassword.id, username: userWithPassword.username }; // Makes sense to get username for redirect here...
+  return { id: userWithPassword.id }; // Makes sense to get username for redirect here...
 }
 
-export async function login({ email, password }: AuthCredentials) {
+export async function createAccount({ email, firstName, lastName, password }: AuthCredentials) {
+  const session = await prisma.session.create({
+    data: {
+      expirationDate: getSessionExpirationDate(),
+      user: {
+        create: {
+          email,
+          firstName,
+          lastName,
+          password: {
+            create: {
+              hash: hashPassword(password),
+            },
+          },
+        },
+      },
+    },
+    select: {
+      id: true,
+      expirationDate: true,
+      userId: true,
+    },
+  });
+
+  return session;
+}
+
+export async function login({ email, password }: Pick<AuthCredentials, 'email' | 'password'>) {
   const user = await verifyUserPassword({ email, password });
 
   if (!user) return null;
@@ -78,17 +108,9 @@ export async function requireAnonymous(request: Request) {
   const userId = await getUserId(request);
 
   if (userId) {
-    const user = await prisma.user.findFirst({
-      where: {
-        id: userId,
-      },
-      select: {
-        username: true,
-      },
-    });
-
-    throw redirect(`/${user?.username}`);
+    throw redirect(`/${userId}`);
   }
+  return;
 }
 
 export async function requireUserId(request: Request) {

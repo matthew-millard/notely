@@ -43,7 +43,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const cookieSession = await getSession(request);
   cookieSession.set(SESSION_KEY, session.id);
 
-  return redirect(`/${user.username}`, {
+  return redirect(`/${user.id}`, {
     headers: {
       'Set-Cookie': await sessionStorage.commitSession(cookieSession, {
         expires: session.expirationDate, // Remember me permanently set

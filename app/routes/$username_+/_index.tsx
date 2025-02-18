@@ -1,6 +1,5 @@
-import { LoaderFunctionArgs } from "@remix-run/node";
-import { requireUserId } from "~/.server/auth";
-// import { P } from "~/components/typography";
+import { LoaderFunctionArgs } from '@remix-run/node';
+import { requireUserId } from '~/.server/auth';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireUserId(request);

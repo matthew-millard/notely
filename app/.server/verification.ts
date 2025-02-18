@@ -36,7 +36,6 @@ export async function validateRequest(request: Request, body: URLSearchParams | 
         type: data[TYPE_QUERY_PARAM],
         target: data[TARGET_QUERY_PARAM],
       });
-      console.log('here!');
 
       if (!codeIsValid) {
         ctx.addIssue({
