@@ -86,7 +86,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const response = await sendEmail({
     from: 'Notely <no-reply@notely.ca>',
     to: [email],
-    subject: 'Verify your email address',
+    subject: `${otp} is your code to confirm this email`,
     reactEmailTemplate: <VerifyEmail otp={otp} verifyUrl={verifyUrl.toString()} />,
   });
 
