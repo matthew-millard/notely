@@ -2,10 +2,10 @@ import { parseWithZod } from '@conform-to/zod';
 import { generateTOTP } from '@epic-web/totp';
 import { ActionFunctionArgs, json, LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { z } from 'zod';
+import VerifyEmail from 'emails/verify-email';
 import { requireAnonymous } from '~/.server/auth';
 import { prisma } from '~/.server/db';
 import { sendEmail } from '~/.server/email';
-import { VerifyEmail } from '~/components/emails';
 import { SignUpForm } from '~/components/forms';
 import { SignUpSchema } from '~/components/forms/SignUpForm';
 import { getDomainUrl } from '~/utils';
@@ -86,7 +86,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const response = await sendEmail({
     from: 'Notely <no-reply@notely.ca>',
     to: [email],
-    subject: 'Verify your email address',
+    subject: `${otp} is your code to confirm this email`,
     reactEmailTemplate: <VerifyEmail otp={otp} verifyUrl={verifyUrl.toString()} />,
   });
 

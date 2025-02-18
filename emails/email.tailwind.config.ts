@@ -2,6 +2,9 @@ import type { TailwindConfig } from '@react-email/tailwind';
 
 export default {
   theme: {
+    fontFamily: {
+      sans: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+    },
     fontSize: {
       xs: ['12px', { lineHeight: '16px' }],
       sm: ['14px', { lineHeight: '20px' }],
