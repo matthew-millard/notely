@@ -31,7 +31,6 @@ export async function action({ request }: ActionFunctionArgs) {
   if (submission.status !== 'success') {
     return json(
       submission.reply({
-        formErrors: ['Submission failed.'],
         hideFields: ['password'],
       }),
       { status: submission.status === 'error' ? 400 : 200 }
