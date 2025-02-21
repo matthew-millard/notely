@@ -1,4 +1,5 @@
 import { Form } from '@remix-run/react';
+import { LoaderCircle } from 'lucide-react';
 import React from 'react';
 import { z } from 'zod';
 import { Button } from '~/components/ui';
@@ -45,10 +46,16 @@ export default function ProviderConnectionForm({
   const formAction = `/auth/${providerName}`;
   const isPending = useIsPending({ formAction });
   return (
-    <Form method="POST" action={formAction}>
-      <Button type="submit" disabled={isPending}>
-        {/* e.g 'Sign up with Meta */}
-        {type} with {providerLabels[providerName]}
+    <Form method="POST" action={formAction} className="col-start-2 w-full">
+      <Button type="submit" disabled={isPending} variant="outline">
+        {isPending ? (
+          <LoaderCircle className="animate-spin" />
+        ) : (
+          <span className="flex items-center gap-2">
+            {providerIcons[providerName]}
+            {type} with {providerLabels[providerName]}
+          </span>
+        )}
       </Button>
     </Form>
   );
