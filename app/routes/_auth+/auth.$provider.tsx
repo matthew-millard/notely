@@ -1,11 +1,12 @@
-// import { ActionFunctionArgs, redirect } from '@remix-run/node';
-// import { authenticator } from '~/.server/auth-socials';
+import { ActionFunctionArgs } from '@remix-run/node';
+import { authenticator } from '~/.server/connections';
+import { ProviderNamesSchema } from '~/components/forms/ProviderConnectionForm';
 
-// export async function loader() {
-//   throw redirect('/login');
-// }
+export async function action({ request, params }: ActionFunctionArgs) {
+  const providerName = ProviderNamesSchema.parse(params.provider);
 
-// export async function action({ request, params }: ActionFunctionArgs) {
-//   const provider = params.provider ?? '';
-//   return authenticator.authenticate(provider, request);
-// }
+  const connection = await authenticator.authenticate(providerName, request);
+  console.log('connection', connection);
+
+  return connection;
+}
