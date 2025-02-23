@@ -6,6 +6,8 @@ const envSchema = z.object({
   RESEND_API_KEY: z.string(),
   FACEBOOK_CLIENT_ID: z.string(),
   FACEBOOK_CLIENT_SECRET: z.string(),
+  GOOGLE_CLIENT_ID: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string(),
 });
 
 const env = envSchema.parse(process.env);
