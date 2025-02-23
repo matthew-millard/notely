@@ -94,6 +94,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       email: profile.email,
       firstName: profile.firstName,
       lastName: profile.lastName,
+      avatarUrl: profile.avatarUrl,
     },
   });
 

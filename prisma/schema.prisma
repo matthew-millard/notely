@@ -12,6 +12,7 @@ model User {
   email       String       @unique
   firstName   String
   lastName    String
+  avatarUrl   String?
   password    Password?
   sessions    Session[]
   connections Connection[]
