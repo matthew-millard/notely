@@ -3,7 +3,7 @@ import { ActionFunctionArgs, json, LoaderFunctionArgs, redirect } from '@remix-r
 import { z } from 'zod';
 import { login, requireAnonymous } from '~/.server/auth';
 import { SESSION_KEY } from '~/.server/config';
-import { getSession, sessionStorage } from '~/.server/session';
+import { authSessionStorage, getSession } from '~/.server/session';
 import { LoginForm } from '~/components/forms';
 import { LoginSchema } from '~/components/forms/LoginForm';
 
@@ -39,12 +39,12 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { session, user } = submission.value;
 
-  const cookieSession = await getSession(request);
-  cookieSession.set(SESSION_KEY, session.id);
+  const authSession = await getSession(request);
+  authSession.set(SESSION_KEY, session.id);
 
   return redirect(`/${user.id}`, {
     headers: {
-      'Set-Cookie': await sessionStorage.commitSession(cookieSession, {
+      'Set-Cookie': await authSessionStorage.commitSession(authSession, {
         expires: session.expirationDate, // Remember me permanently set
       }),
     },
