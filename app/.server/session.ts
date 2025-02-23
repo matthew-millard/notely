@@ -4,9 +4,22 @@ import { ENV } from './env';
 
 const sessionSecret = ENV.SESSION_SECRET;
 
+const OAUTH_SESSION_KEY = 'oauth2_session_id';
+
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
     name: `${COOKIE_PREFIX}_session_id`,
+    httpOnly: true,
+    path: '/',
+    sameSite: 'lax',
+    secrets: [sessionSecret],
+    secure: process.env.NODE_ENV === 'production',
+  },
+});
+
+export const authSessionStorage = createCookieSessionStorage({
+  cookie: {
+    name: `${COOKIE_PREFIX}_${OAUTH_SESSION_KEY}`,
     httpOnly: true,
     path: '/',
     sameSite: 'lax',

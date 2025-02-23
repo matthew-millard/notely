@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 import { hashPassword } from '~/utils';
 import { SESSION_KEY } from './config';
 import { prisma } from './db';
-import { getSession, sessionStorage } from './session';
+import { authSessionStorage } from './session';
 
 interface AuthCredentials {
   email: User['email'];
@@ -86,20 +86,22 @@ export async function login({ email, password }: Pick<AuthCredentials, 'email' |
 }
 
 export async function logout(request: Request) {
-  const cookieSession = await getSession(request);
-  const sessionId = cookieSession.get(SESSION_KEY);
+  const authSession = await authSessionStorage.getSession(request.headers.get('cookie'));
+  const sessionId = authSession.get(SESSION_KEY);
 
-  void prisma.session
-    .delete({
-      where: {
-        id: sessionId,
-      },
-    })
-    .catch(() => {});
+  if (sessionId) {
+    void prisma.session
+      .delete({
+        where: {
+          id: sessionId,
+        },
+      })
+      .catch(() => {});
+  }
 
   throw redirect('/', {
     headers: {
-      'Set-Cookie': await sessionStorage.destroySession(cookieSession),
+      'Set-Cookie': await authSessionStorage.destroySession(authSession),
     },
   });
 }
@@ -124,8 +126,9 @@ export async function requireUserId(request: Request) {
 }
 
 export async function getUserId(request: Request) {
-  const cookieSession = await getSession(request);
-  const sessionId = cookieSession.get(SESSION_KEY);
+  const authSession = await authSessionStorage.getSession(request.headers.get('cookie'));
+
+  const sessionId = authSession.get(SESSION_KEY);
 
   if (!sessionId) return null;
 
@@ -134,8 +137,12 @@ export async function getUserId(request: Request) {
     select: { userId: true },
   });
 
-  if (!session) {
-    throw await logout(request);
+  if (!session?.userId) {
+    throw redirect('/', {
+      headers: {
+        'Set-Cookie': await authSessionStorage.destroySession(authSession),
+      },
+    });
   }
 
   return session.userId;

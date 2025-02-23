@@ -42,6 +42,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
           email: true,
           firstName: true,
           lastName: true,
+          avatarUrl: true,
         },
       })
     : null;
