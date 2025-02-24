@@ -1,12 +1,15 @@
 import { cssBundleHref } from '@remix-run/css-bundle';
 import '~/tailwind.css';
 import { ActionFunctionArgs, json, LoaderFunctionArgs } from '@remix-run/node';
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react';
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from '@remix-run/react';
 import React from 'react';
+import { Toaster } from 'sonner';
 import { getUserId } from '~/.server/auth';
 import { prisma } from '~/.server/db';
 import { getThemeFromCookie, updateTheme } from '~/.server/theme';
+import { getToast, toastSessionStorage } from './.server/toast';
 import { updateThemeActionIntent, type Theme } from './components/ui/ThemeSwitch';
+import RenderToast from './components/ui/Toast';
 import { useTheme } from './hooks';
 
 export function links() {
@@ -31,6 +34,9 @@ export async function action({ request }: ActionFunctionArgs) {
 export async function loader({ request }: LoaderFunctionArgs) {
   const theme = getThemeFromCookie(request);
   const userId = await getUserId(request);
+  const { toast, toastCookieSession } = await getToast(request);
+  console.log('toastCookieSession', toastCookieSession);
+  console.log('toast', toast);
 
   const user = userId
     ? await prisma.user.findUniqueOrThrow({
@@ -50,15 +56,23 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const data = {
     theme: theme as Theme,
     user,
+    toast,
   };
 
-  return json(data);
+  return json(data, {
+    headers: {
+      'Set-Cookie': await toastSessionStorage.commitSession(toastCookieSession),
+    },
+  });
 }
 
 function App() {
+  const data = useLoaderData<typeof loader>();
+
   return (
     <Document>
       <Outlet />
+      {data.toast ? <RenderToast toast={data.toast} /> : null}
     </Document>
   );
 }
@@ -75,6 +89,7 @@ function Document({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <Toaster closeButton expand />
         <ScrollRestoration />
         <Scripts />
       </body>
