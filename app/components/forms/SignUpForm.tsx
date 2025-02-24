@@ -26,7 +26,7 @@ export default function SignUpForm({ className, ...props }: React.ComponentProps
   });
 
   return (
-    <div className={cn('flex w-full max-w-md flex-col gap-6', className)} {...props}>
+    <div className={cn('flex w-full max-w-[480px] flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Create your free account</CardTitle>
@@ -52,7 +52,7 @@ export default function SignUpForm({ className, ...props }: React.ComponentProps
             <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
               <span className="relative z-10 bg-background px-2 text-muted-foreground">Or continue with</span>
             </div>
-            <div className="flex justify-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
               {providerNames.map(providerName => (
                 <ProviderConnectionForm providerName={providerName} type="Sign up" key={providerName} />
               ))}
