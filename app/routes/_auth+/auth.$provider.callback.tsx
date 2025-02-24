@@ -1,7 +1,7 @@
 import { LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { getSessionExpirationDate, getUserId } from '~/.server/auth';
 import { SESSION_KEY } from '~/.server/config';
-import { authenticator, AuthUser } from '~/.server/connections';
+import { authenticator } from '~/.server/connections';
 import { prisma } from '~/.server/db';
 import { authSessionStorage } from '~/.server/session';
 import { ProviderNamesSchema } from '~/components/forms/ProviderConnectionForm';
@@ -13,7 +13,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     data =>
       ({
         success: true,
-        data: data as AuthUser,
+        data,
       } as const),
     error =>
       ({

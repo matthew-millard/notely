@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { login, requireAnonymous } from '~/.server/auth';
 import { SESSION_KEY } from '~/.server/config';
 import { authSessionStorage, getSession } from '~/.server/session';
+import { setToastCookie, toastSessionStorage } from '~/.server/toast';
 import { LoginForm } from '~/components/forms';
 import { LoginSchema } from '~/components/forms/LoginForm';
 
@@ -42,12 +43,25 @@ export async function action({ request }: ActionFunctionArgs) {
   const authSession = await getSession(request);
   authSession.set(SESSION_KEY, session.id);
 
+  const toastSession = await setToastCookie(request, {
+    id: 'logged-in',
+    title: 'Success',
+    description: 'You are now logged in to your account',
+    type: 'success',
+  });
+
+  // combine headers
+  const combinedHeaders = new Headers();
+  combinedHeaders.append('Set-Cookie', await toastSessionStorage.commitSession(toastSession));
+  combinedHeaders.append(
+    'Set-Cookie',
+    await authSessionStorage.commitSession(authSession, {
+      expires: session.expirationDate, // Remember me permanently set
+    })
+  );
+
   return redirect(`/${user.id}`, {
-    headers: {
-      'Set-Cookie': await authSessionStorage.commitSession(authSession, {
-        expires: session.expirationDate, // Remember me permanently set
-      }),
-    },
+    headers: combinedHeaders,
   });
 }
 
