@@ -2,10 +2,7 @@ import { Authenticator } from 'remix-auth';
 import { OAuth2Strategy } from 'remix-auth-oauth2';
 import { z } from 'zod';
 import { type ProviderName } from '~/components/forms/ProviderConnectionForm';
-import { COOKIE_PREFIX } from './config';
 import { ENV } from './env';
-
-const OAUTH2_KEY = 'oauth2';
 
 interface OAuth2Tokens {
   data: object;
@@ -54,10 +51,10 @@ const GoogleResponseSchema = z.object({
   email_verified: z.boolean(),
 });
 
-export const authenticator = new Authenticator();
+export const authenticator = new Authenticator<AuthUser>();
 
-const cookie = {
-  name: `${COOKIE_PREFIX}_${OAUTH2_KEY}`,
+const oauthCookieConfig = {
+  name: 'oauth2',
   maxAge: 60 * 60 * 24 * 7,
   path: '/',
   httpOnly: true as const,
@@ -69,7 +66,7 @@ const cookie = {
 authenticator.use(
   new OAuth2Strategy(
     {
-      cookie,
+      cookie: oauthCookieConfig,
       authorizationEndpoint: 'https://www.facebook.com/v22.0/dialog/oauth',
       tokenEndpoint: 'https://graph.facebook.com/v22.0/oauth/access_token',
       clientId: ENV.FACEBOOK_CLIENT_ID,
@@ -100,7 +97,7 @@ authenticator.use(
 authenticator.use(
   new OAuth2Strategy(
     {
-      cookie,
+      cookie: oauthCookieConfig,
       authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
       tokenEndpoint: 'https://oauth2.googleapis.com/token',
       clientId: ENV.GOOGLE_CLIENT_ID,
