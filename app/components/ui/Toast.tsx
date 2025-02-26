@@ -1,43 +1,52 @@
-import { Check, CircleAlert, CircleX, Info } from 'lucide-react';
-import { useEffect } from 'react';
-import { toast as showToast } from 'sonner';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { toast as sonnerToast } from 'sonner';
+import { classNames as cn } from '~/utils';
+
+const toastVariants = cva('flex rounded-lg shadow-lg ring-1 ring-border w-full md:max-w-[364px] items-center p-4', {
+  variants: {
+    variant: {
+      default: 'bg-card',
+      success: 'bg-green-500',
+      error: 'bg-red-500',
+      info: 'bg-blue-500',
+    },
+  },
+  defaultVariants: {
+    variant: 'default',
+  },
+});
 
 export type ToastProps = {
   id: string | number;
-  type: 'success' | 'info' | 'error';
+  type: 'default' | 'success' | 'info' | 'error';
   title: string;
   description: string;
-};
+} & VariantProps<typeof toastVariants>;
 
-export default function RenderToast({ toast }: { toast: ToastProps }) {
-  const { type, title, description, id } = toast;
-
-  useEffect(() => {
-    setTimeout(() => {
-      showToast.custom(() => <Toast id={id} type={type} title={title} description={description} />);
-    }, 0);
-  }, [type, title, description, id]);
-  return null;
+/** I recommend abstracting the toast function
+ *  so that you can call it without having to use toast.custom everytime. */
+export function toast(props: ToastProps) {
+  return sonnerToast.custom(() => <Toast {...props} />);
 }
 
-function Toast({ id, type, title, description }: ToastProps) {
-  const icons = {
-    success: <Check className="text-green-500" />,
-    info: <Info className="text-blue-500" />,
-    error: <CircleAlert className="text-red-500" />,
-  };
-  const icon = icons[type];
-
+/** A fully custom toast that still maintains the animations and interactions. */
+function Toast({ title, description, type = 'default' }: ToastProps) {
   return (
-    <div key={id} className="bg-card flex items-start p-4 border rounded-lg shadow-lg w-full">
-      <div className="flex-shrink-0 h-6 w-6">{icon}</div>
-      <div className="ml-3 flex-1 pt-0.5">
-        <p className="text-sm font-medium">{title}</p>
-        <p className="mt-1 text-sm">{description}</p>
+    <div className={cn(toastVariants({ variant: type }))}>
+      <div className="flex flex-1 items-center">
+        <div className="w-full">
+          <p className="text-sm font-medium text-card-foreground">{title}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+        </div>
       </div>
-      <button onClick={() => showToast.dismiss(id)} className="ml-3">
-        <CircleX className="w-5 h-5 text-card-foreground hover:text-card-foreground/80" />
-      </button>
+      <div className="ml-5 shrink-0">
+        <button
+          className="rounded bg-primary px-3 py-1 text-sm font-semibold text-primary-foreground hover:bg-primary/80"
+          onClick={() => sonnerToast.dismiss()}
+        >
+          Cancel
+        </button>
+      </div>
     </div>
   );
 }

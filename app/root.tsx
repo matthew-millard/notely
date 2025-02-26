@@ -9,8 +9,7 @@ import { prisma } from '~/.server/db';
 import { getThemeFromCookie, updateTheme } from '~/.server/theme';
 import { getToast, toastSessionStorage } from './.server/toast';
 import { updateThemeActionIntent, type Theme } from './components/ui/ThemeSwitch';
-import RenderToast from './components/ui/Toast';
-import { useTheme } from './hooks';
+import { useTheme, useToast } from './hooks';
 
 export function links() {
   return [
@@ -35,8 +34,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const theme = getThemeFromCookie(request);
   const userId = await getUserId(request);
   const { toast, toastCookieSession } = await getToast(request);
-  console.log('toastCookieSession', toastCookieSession);
-  console.log('toast', toast);
 
   const user = userId
     ? await prisma.user.findUniqueOrThrow({
@@ -68,11 +65,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 function App() {
   const data = useLoaderData<typeof loader>();
+  useToast(data.toast);
 
   return (
     <Document>
       <Outlet />
-      {data.toast ? <RenderToast toast={data.toast} /> : null}
     </Document>
   );
 }
