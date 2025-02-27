@@ -86,7 +86,7 @@ function Document({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
-        <Toaster closeButton expand />
+        <Toaster richColors expand />
         <ScrollRestoration />
         <Scripts />
       </body>

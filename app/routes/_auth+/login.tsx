@@ -44,13 +44,12 @@ export async function action({ request }: ActionFunctionArgs) {
   authSession.set(SESSION_KEY, session.id);
 
   const toastSession = await setToastCookie(request, {
-    id: 'logged-in',
+    id: 'logged-in-successfully',
     title: 'Success',
     description: 'You are now logged in to your account',
     type: 'success',
   });
 
-  // combine headers
   const combinedHeaders = new Headers();
   combinedHeaders.append('Set-Cookie', await toastSessionStorage.commitSession(toastSession));
   combinedHeaders.append(
