@@ -45,7 +45,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const toastSession = await setToastCookie(request, {
     id: 'logged-in-successfully',
-    title: 'Success',
+    title: 'Welcome back!',
     description: 'You are now logged in to your account',
     type: 'success',
   });
