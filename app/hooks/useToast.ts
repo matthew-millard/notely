@@ -1,12 +1,16 @@
 import { useEffect } from 'react';
-import { type ToastProps, toast as customToast } from '~/components/ui/Toast';
+import { toast as showToast } from 'sonner';
+import { ToastProps } from '~/components/ui/Toast';
 
 export default function useToast(toast?: ToastProps) {
   useEffect(() => {
     if (toast) {
       setTimeout(() => {
-        customToast(toast);
+        showToast[toast.type](toast.title, {
+          id: toast.id,
+          description: toast.description,
+        });
       }, 0);
     }
-  });
+  }, [toast]);
 }
