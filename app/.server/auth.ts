@@ -5,6 +5,7 @@ import { hashPassword } from '~/utils';
 import { SESSION_KEY } from './config';
 import { prisma } from './db';
 import { authSessionStorage } from './session';
+import { setToastCookie, toastSessionStorage } from './toast';
 
 interface AuthCredentials {
   email: User['email'];
@@ -99,10 +100,19 @@ export async function logout(request: Request) {
       .catch(() => {});
   }
 
-  throw redirect('/', {
-    headers: {
-      'Set-Cookie': await authSessionStorage.destroySession(authSession),
-    },
+  const toastSession = await setToastCookie(request, {
+    id: 'logged-out-successfully',
+    title: 'See you soon!',
+    description: 'You have been logged out of your account',
+    type: 'success',
+  });
+
+  const combinedHeaders = new Headers();
+  combinedHeaders.append('Set-Cookie', await authSessionStorage.destroySession(authSession));
+  combinedHeaders.append('Set-Cookie', await toastSessionStorage.commitSession(toastSession));
+
+  throw redirect('/login', {
+    headers: combinedHeaders,
   });
 }
 
