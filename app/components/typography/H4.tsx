@@ -5,5 +5,5 @@ interface H4Props extends React.ComponentPropsWithoutRef<'h4'> {
 }
 
 export default function H4({ children }: H4Props) {
-  return <h4 className="scroll-m-20 text-xl font-semibold tracking-tight p-2">{children}</h4>;
+  return <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">{children}</h4>;
 }
