@@ -1,9 +1,12 @@
 import { getFormProps, getInputProps, getTextareaProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
-import { json } from '@remix-run/node';
+import { ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { Form, useActionData, useRouteLoaderData } from '@remix-run/react';
 import { LoaderCircle } from 'lucide-react';
 import { z } from 'zod';
+import { requireUserId } from '~/.server/auth';
+import { prisma } from '~/.server/db';
+import { setToastCookie, toastSessionStorage } from '~/.server/toast';
 import { Button, FieldError, Input, Label } from '~/components/ui';
 import { useIsPending } from '~/hooks';
 import { loader } from '../_layout';
@@ -13,8 +16,42 @@ const newNoteSchema = z.object({
   content: z.string().trim().min(1, { message: 'Note must be longer than 1 character' }).max(5000),
 });
 
-export async function action() {
-  return json({});
+export async function action({ request }: ActionFunctionArgs) {
+  const userId = await requireUserId(request);
+  const formData = await request.formData();
+  const submission = parseWithZod(formData, {
+    schema: newNoteSchema,
+  });
+
+  if (submission.status !== 'success') {
+    return json(submission.reply(), {
+      status: submission.status === 'error' ? 400 : 200,
+    });
+  }
+
+  const { content, title } = submission.value;
+
+  const note = await prisma.note.create({
+    data: {
+      title,
+      content,
+      userId,
+    },
+  });
+
+  const toastSession = await setToastCookie(request, {
+    id: 'new-note-toast',
+    title: 'Note saved',
+    description: 'Your note has been successfully created',
+    type: 'success',
+  });
+
+  return redirect(`/${userId}/notes/${note.id}`, {
+    headers: {
+      'Set-Cookie': await toastSessionStorage.commitSession(toastSession),
+    },
+    status: 200,
+  });
 }
 
 export default function NewNotesRoute() {
