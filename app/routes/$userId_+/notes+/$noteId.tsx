@@ -1,16 +1,23 @@
 import { json, LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
+import { requireUserId } from '~/.server/auth';
+import { prisma } from '~/.server/db';
 import { H4, P } from '~/components/typography';
-import { notes } from '../_layout';
 
-export async function loader({ params }: LoaderFunctionArgs) {
-  const note = notes.find(note => note.id === params.noteId);
+export async function loader({ request, params }: LoaderFunctionArgs) {
+  await requireUserId(request);
+  // Todo: Check for invariant userId and params.userId
+
+  console.log('params noteId', params.noteId);
+
+  const note = await prisma.note.findUnique({
+    where: {
+      id: params.noteId,
+    },
+  });
 
   if (!note) {
-    throw new Response('Note not found', {
-      status: 404,
-      statusText: 'Not found',
-    });
+    throw new Error('No note found');
   }
 
   return json({ note });
