@@ -50,7 +50,6 @@ export async function action({ request }: ActionFunctionArgs) {
     headers: {
       'Set-Cookie': await toastSessionStorage.commitSession(toastSession),
     },
-    status: 200,
   });
 }
 
