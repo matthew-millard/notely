@@ -5,14 +5,15 @@ import { requireUserId } from '~/.server/auth';
 import { prisma } from '~/.server/db';
 import { H4, P } from '~/components/typography';
 
+// Todo - figure out where this should live
+export const ParamsSchema = z.object({
+  userId: z.string(),
+  noteId: z.string(),
+});
+
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
-  const validRouteParams = z
-    .object({
-      userId: z.string(),
-      noteId: z.string(),
-    })
-    .parse(params);
+  const validRouteParams = ParamsSchema.parse(params);
 
   if (userId !== validRouteParams.userId) {
     throw new Response('Not authorised', {
