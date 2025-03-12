@@ -1,7 +1,6 @@
 import { ActionFunctionArgs, redirect } from '@remix-run/node';
 import { requireUserId } from '~/.server/auth';
 import { prisma } from '~/.server/db';
-import { setToastCookie, toastSessionStorage } from '~/.server/toast';
 import { ParamsSchema } from './$noteId';
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -21,18 +20,28 @@ export async function action({ request, params }: ActionFunctionArgs) {
       },
     });
 
-    const toastSession = await setToastCookie(request, {
-      id: crypto.randomUUID(),
-      title: 'Note deleted',
-      description: 'Your note has been permanently removed',
-      type: 'success',
-    });
-
-    return redirect(`/${userId}`, {
-      headers: {
-        'Set-Cookie': await toastSessionStorage.commitSession(toastSession),
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        notes: {
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
       },
     });
+
+    let redirectUrl;
+
+    if (user?.notes && user.notes.length > 0) {
+      redirectUrl = `/${userId}/notes/${user?.notes[0].id}`;
+    } else {
+      redirectUrl = `/${userId}`;
+    }
+
+    return redirect(redirectUrl);
   } catch (error) {
     throw new Response('Note not found', {
       status: 404,

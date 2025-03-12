@@ -16,7 +16,7 @@ model User {
   password    Password?
   sessions    Session[]
   connections Connection[]
-  note        Note[]
+  notes       Note[]
 }
 
 model Password {
