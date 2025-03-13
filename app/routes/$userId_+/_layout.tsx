@@ -13,6 +13,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     where: {
       userId,
     },
+    orderBy: {
+      updatedAt: 'desc',
+    },
   });
 
   return json({ userId, notes });

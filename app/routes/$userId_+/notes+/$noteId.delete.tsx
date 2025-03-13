@@ -14,37 +14,49 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 
   try {
-    await prisma.note.delete({
-      where: {
-        id: validRouteParams.noteId,
-      },
-    });
+    const [deletedNote, mostRecenetNote] = await prisma.$transaction([
+      prisma.note.delete({
+        where: {
+          id: validRouteParams.noteId,
+        },
+      }),
 
-    const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-      select: {
-        notes: {
-          orderBy: {
-            createdAt: 'desc',
+      prisma.note.findFirst({
+        where: {
+          userId,
+          NOT: {
+            id: validRouteParams.noteId,
           },
         },
-      },
-    });
+        orderBy: {
+          updatedAt: 'desc',
+        },
+        select: {
+          id: true,
+        },
+      }),
+    ]);
 
-    let redirectUrl;
-
-    if (user?.notes && user.notes.length > 0) {
-      redirectUrl = `/${userId}/notes/${user?.notes[0].id}`;
-    } else {
-      redirectUrl = `/${userId}`;
+    if (!deletedNote) {
+      throw new Response('Note note found', { status: 404 });
     }
 
-    return redirect(redirectUrl);
+    return redirect(mostRecenetNote ? `/${userId}/notes/${mostRecenetNote.id}` : `/${userId}`);
   } catch (error) {
-    throw new Response('Note not found', {
-      status: 404,
+    console.error('Failed to delete note:', error);
+    if (error instanceof Response) {
+      throw error;
+    }
+
+    if (error instanceof Error) {
+      throw new Response(error.message, {
+        status: 500,
+        statusText: error.name,
+      });
+    }
+
+    throw new Response('An unexpected error occurred', {
+      status: 500,
     });
   }
 }
