@@ -3,6 +3,7 @@ import { useFetcher } from '@remix-run/react';
 import { z } from 'zod';
 import { useTheme } from '~/hooks';
 import { Button } from './Button';
+import Tooltip from './Tooltip';
 
 export type Theme = 'light' | 'dark';
 export const fetcherKey = 'update-theme';
@@ -21,10 +22,12 @@ export default function ThemeSwitch() {
   return (
     <fetcher.Form method="POST" action="/">
       <input type="hidden" name="theme" value={nextMode} />
-      <Button type="submit" name="intent" value={updateThemeActionIntent} variant="ghost" size="icon">
-        {mode === 'light' ? <SunIcon aria-hidden="true" /> : <MoonIcon aria-hidden="true" />}
-        <span className="sr-only">Toggle theme</span>
-      </Button>
+      <Tooltip label={`Switch theme to ${nextMode}`} side="top">
+        <Button type="submit" name="intent" value={updateThemeActionIntent} variant="ghost" size="icon">
+          {mode === 'light' ? <SunIcon aria-hidden="true" /> : <MoonIcon aria-hidden="true" />}
+          <span className="sr-only">Toggle theme</span>
+        </Button>
+      </Tooltip>
     </fetcher.Form>
   );
 }

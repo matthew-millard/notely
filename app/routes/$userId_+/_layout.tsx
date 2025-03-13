@@ -1,10 +1,12 @@
 import { TrashIcon } from '@radix-ui/react-icons';
 import { json, LoaderFunctionArgs } from '@remix-run/node';
-import { Form, NavLink, Outlet, useLoaderData, useNavigation } from '@remix-run/react';
+import { Form, Link, NavLink, Outlet, useLoaderData, useNavigation } from '@remix-run/react';
+import { PenSquareIcon } from 'lucide-react';
 import { requireUserId } from '~/.server/auth';
 import { prisma } from '~/.server/db';
 import { Footer, Header } from '~/components/layouts';
 import { H4 } from '~/components/typography';
+import { Tooltip } from '~/components/ui';
 import { classNames as cn } from '~/utils';
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -37,7 +39,14 @@ export default function UserDashboardLayout() {
         <div className="mx-auto w-full container border-x">
           <div className="flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
             <aside className="fixed top-14 z-30 hidden h-[calc(100vh-3.5rem)] w-full shrink-0 border-r md:sticky md:block">
-              <div className="h-full overflow-auto py-6 pr-4 lg:py-8">
+              <div className="h-full overflow-auto py-3 pr-4">
+                <div className="flex w-full">
+                  <Link to={`/${userId}/notes/new`} prefetch="intent" className="ml-auto">
+                    <Tooltip label="New note" side="bottom">
+                      <PenSquareIcon className="h-5 w-5" />
+                    </Tooltip>
+                  </Link>
+                </div>
                 <div className="flex flex-col gap-6">
                   <div className="flex flex-col gap-1">
                     <H4>My Notes</H4>

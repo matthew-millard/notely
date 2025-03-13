@@ -1,4 +1,4 @@
-import ThemeSwitch from "../ui/ThemeSwitch";
+import ThemeSwitch from '../ui/ThemeSwitch';
 
 export default function Footer() {
   return (
