@@ -13,6 +13,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     where: {
       userId,
     },
+    orderBy: {
+      updatedAt: 'desc',
+    },
   });
 
   return json({ userId, notes });
@@ -21,9 +24,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function UserDashboardLayout() {
   const { userId, notes } = useLoaderData<typeof loader>();
 
-  const formAction = useNavigation().formAction;
-  const urlSegments = formAction?.split('/');
-  const deletedNoteId = urlSegments?.[3];
+  const navigation = useNavigation();
+
+  const isDeleting = (noteId: string) => {
+    return navigation.state && navigation.formAction?.includes(`/${noteId}/delete`);
+  };
 
   return (
     <div className="relative">
@@ -37,36 +42,39 @@ export default function UserDashboardLayout() {
                   <div className="flex flex-col gap-1">
                     <H4>My Notes</H4>
                     <div className="grid grid-flow-row auto-rows-max gap-0.5 text-sm">
-                      {notes
-                        .filter(note => note.id !== deletedNoteId)
-                        ?.map(note => (
-                          <div key={note.id} className="relative">
-                            <NavLink
-                              to={`/${userId}/notes/${note.id}`}
-                              prefetch="intent"
-                              className={({ isActive }) =>
-                                cn(
-                                  'group relative flex h-8 w-full items-center rounded-md px-2 after:absolute after:inset-x-0 after:inset-y-[-2px] after:rounded-lg hover:bg-accent hover:text-accent-foreground font-medium',
-                                  isActive ? 'bg-accent text-accent-foreground' : ''
-                                )
-                              }
+                      {notes?.map(note => (
+                        <div key={note.id} className="relative">
+                          <NavLink
+                            to={`/${userId}/notes/${note.id}`}
+                            prefetch="intent"
+                            className={({ isActive }) =>
+                              cn(
+                                'group relative flex h-8 w-full items-center rounded-md px-2 after:absolute after:inset-x-0 after:inset-y-[-2px] after:rounded-lg hover:bg-accent hover:text-accent-foreground font-medium',
+                                isActive ? 'bg-accent text-accent-foreground' : '',
+                                isDeleting(note.id) ? 'opacity-50' : ''
+                              )
+                            }
+                          >
+                            <span className="line-clamp-1 w-full">{note.title}</span>
+                          </NavLink>
+                          <Form
+                            method="POST"
+                            action={`/${userId}/notes/${note.id}/delete`}
+                            className="absolute right-2 top-[5px]"
+                          >
+                            <button
+                              type="submit"
+                              disabled={isDeleting(note.id)}
+                              className={cn(
+                                'bg-transparent p-1 rounded-full hover:bg-destructive hover:text-destructive-foreground',
+                                isDeleting(note.id) ? 'cursor-not-allowed opacity-50' : ''
+                              )}
                             >
-                              <span className="line-clamp-1 w-full">{note.title}</span>
-                            </NavLink>
-                            <Form
-                              method="POST"
-                              action={`/${userId}/notes/${note.id}/delete`}
-                              className="absolute right-2 top-[5px]"
-                            >
-                              <button
-                                type="submit"
-                                className="bg-transparent p-1 rounded-full hover:bg-destructive hover:text-destructive-foreground"
-                              >
-                                <TrashIcon />
-                              </button>
-                            </Form>
-                          </div>
-                        ))}
+                              <TrashIcon />
+                            </button>
+                          </Form>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
