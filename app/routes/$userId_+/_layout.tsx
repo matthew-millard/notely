@@ -1,7 +1,6 @@
-import { TrashIcon } from '@radix-ui/react-icons';
 import { json, LoaderFunctionArgs } from '@remix-run/node';
 import { Form, Link, NavLink, Outlet, useLoaderData, useNavigation } from '@remix-run/react';
-import { PenSquareIcon } from 'lucide-react';
+import { PenSquareIcon, Trash2 } from 'lucide-react';
 import { requireUserId } from '~/.server/auth';
 import { prisma } from '~/.server/db';
 import { Footer, Header } from '~/components/layouts';
@@ -36,9 +35,9 @@ export default function UserDashboardLayout() {
     <div className="relative">
       <Header />
       <main className="flex flex-col flex-1 min-h-svh">
-        <div className="mx-auto w-full container border-x">
+        <div className="mx-auto w-full container border-r">
           <div className="flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
-            <aside className="fixed top-14 z-30 hidden h-[calc(100vh-3.5rem)] w-full shrink-0 border-r md:sticky md:block">
+            <aside className="fixed top-14 z-30 hidden h-[calc(100vh)] w-full shrink-0 border-r md:sticky md:block">
               <div className="h-full overflow-auto py-3 pr-4">
                 <div className="flex w-full">
                   <Link to={`/${userId}/notes/new`} prefetch="intent" className="ml-auto">
@@ -58,18 +57,18 @@ export default function UserDashboardLayout() {
                             prefetch="intent"
                             className={({ isActive }) =>
                               cn(
-                                'group relative flex h-8 w-full items-center rounded-md px-2 after:absolute after:inset-x-0 after:inset-y-[-2px] after:rounded-lg hover:bg-accent hover:text-accent-foreground font-medium',
+                                'group relative flex h-8 overflow-hidden w-full items-center rounded-md px-2 after:absolute after:inset-x-0 after:inset-y-[-2px] after:rounded-lg hover:bg-accent hover:text-accent-foreground font-medium',
                                 isActive ? 'bg-accent text-accent-foreground' : '',
                                 isDeleting(note.id) ? 'opacity-50' : ''
                               )
                             }
                           >
-                            <span className="line-clamp-1 w-full">{note.title}</span>
+                            <span className="truncate w-44">{note.title}</span>
                           </NavLink>
                           <Form
                             method="POST"
                             action={`/${userId}/notes/${note.id}/delete`}
-                            className="absolute right-2 top-[5px]"
+                            className="absolute right-2 top-1"
                           >
                             <button
                               type="submit"
@@ -79,7 +78,7 @@ export default function UserDashboardLayout() {
                                 isDeleting(note.id) ? 'cursor-not-allowed opacity-50' : ''
                               )}
                             >
-                              <TrashIcon />
+                              <Trash2 className="h-4 w-4" />
                             </button>
                           </Form>
                         </div>
