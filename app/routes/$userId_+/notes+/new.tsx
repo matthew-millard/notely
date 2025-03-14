@@ -13,7 +13,7 @@ import { loader } from '../_layout';
 
 const newNoteSchema = z.object({
   title: z.string().trim().min(1, { message: 'Title must be longer than 1 character' }).max(50),
-  content: z.string().trim().min(1, { message: 'Note must be longer than 1 character' }).max(5000),
+  content: z.string().min(1, { message: 'Note must be longer than 1 character' }).max(10000),
 });
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -89,7 +89,7 @@ export default function NewNotesRoute() {
         rows={10}
         cols={1}
         placeholder="Write a note..."
-        className="pt-10 border-input placeholder:text-muted-foreground focus-visible:ring-ring aria-[invalid]:ring-foreground-destructive w-full rounded-md border bg-transparent px-3 leading-7 py-2 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+        className="pt-10 border-input placeholder:text-muted-foreground focus-visible:ring-ring aria-[invalid]:ring-foreground-destructive w-full rounded-md border bg-transparent px-3 leading-7 py-2 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 whitespace-pre-wrap"
       />
       <FieldError field={fields.title} />
       <Button className="w-20 self-end">{isPending ? <LoaderCircle className="animate-spin" /> : 'Save'}</Button>
