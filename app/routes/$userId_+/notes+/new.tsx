@@ -11,7 +11,7 @@ import { Button, FieldError, Input, Label } from '~/components/ui';
 import { useIsPending } from '~/hooks';
 import { loader } from '../_layout';
 
-const newNoteSchema = z.object({
+export const NoteSchema = z.object({
   title: z.string().trim().min(1, { message: 'Title must be longer than 1 character' }).max(50),
   content: z.string().min(1, { message: 'Note must be longer than 1 character' }).max(10000),
 });
@@ -20,7 +20,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const userId = await requireUserId(request);
   const formData = await request.formData();
   const submission = parseWithZod(formData, {
-    schema: newNoteSchema,
+    schema: NoteSchema,
   });
 
   if (submission.status !== 'success') {
@@ -62,11 +62,11 @@ export default function NewNotesRoute() {
   const [form, fields] = useForm({
     id: 'new-note-form',
     lastResult: useActionData<typeof action>(),
-    constraint: getZodConstraint(newNoteSchema),
+    constraint: getZodConstraint(NoteSchema),
     shouldValidate: 'onSubmit',
     shouldRevalidate: 'onInput',
     onValidate({ formData }) {
-      return parseWithZod(formData, { schema: newNoteSchema });
+      return parseWithZod(formData, { schema: NoteSchema });
     },
   });
 

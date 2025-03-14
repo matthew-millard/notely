@@ -44,9 +44,9 @@ export default function UserDashboardLayout() {
     <div className="relative">
       <Header />
       <main className="flex flex-col flex-1 min-h-svh">
-        <div className="mx-auto w-full container border-r">
+        <div className="mx-auto w-full container">
           <div className="flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
-            <aside className="fixed top-14 z-30 hidden h-[calc(100vh)] w-full shrink-0 border-r md:sticky md:block">
+            <aside className="fixed top-14 z-30 hidden h-[calc(100vh)] w-full shrink-0 sm:border-r md:sticky md:block">
               <div className="h-full overflow-auto py-3 pr-4">
                 <div className="flex w-full">
                   <Link to={`/${userId}/notes/new`} prefetch="intent" className="ml-auto">
