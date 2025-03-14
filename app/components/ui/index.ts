@@ -1,6 +1,18 @@
 import { Avatar, AvatarFallback, AvatarImage } from './Avatar';
 import { Button, buttonVariants } from './Button';
 import CommandTrigger from './CommandTrigger';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+} from './Dialog';
 import FieldError from './FieldError';
 import FormErrors from './FormError';
 import HamburgerMenuToggle from './HamburgerMenuToggle';
@@ -25,4 +37,14 @@ export {
   TooltipProvider,
   TooltipTrigger,
   Tooltip,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
 };
