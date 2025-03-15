@@ -68,14 +68,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
     type: 'success',
   });
 
-  return json(
-    { success: true },
-    {
-      headers: {
-        'Set-Cookie': await toastSessionStorage.commitSession(toastSession),
-      },
-    }
-  );
+  const redirectUrl = `/${userId}/notes/${noteId}?status=success`;
+
+  return redirect(redirectUrl, {
+    headers: {
+      'Set-Cookie': await toastSessionStorage.commitSession(toastSession),
+    },
+  });
 }
 
 export async function loader() {

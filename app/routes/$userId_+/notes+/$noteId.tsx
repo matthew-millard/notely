@@ -1,7 +1,7 @@
 import { getFormProps, getInputProps, getTextareaProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { json, LoaderFunctionArgs } from '@remix-run/node';
-import { useFetcher, useLoaderData } from '@remix-run/react';
+import { Form, useLoaderData, useSearchParams } from '@remix-run/react';
 import { LoaderCircle, PenIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
@@ -61,22 +61,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export default function NoteRoute() {
   const { note, userId } = useLoaderData<typeof loader>();
-  const fetcher = useFetcher({ key: 'update-note' });
   const updateNoteFormAction = `/${userId}/notes/${note.id}/update`;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  console.log('isDialogOpen', isDialogOpen);
-  console.log('fetcher data', fetcher.data);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const formRef = useRef<HTMLFormElement>(null);
 
   const isSubmitting = useDelayedIsPending({ formAction: updateNoteFormAction });
-
-  // FIX This!!!!!!!!
-  useEffect(() => {
-    if (fetcher.state === 'idle' && fetcher.data?.success) {
-      // Close dialog
-      setIsDialogOpen(false);
-      fetcher.submit({ success: false }, { action: `/reset-fetcher`, method: 'POST' });
-    }
-  }, [fetcher]);
 
   const [form, fields] = useForm({
     id: 'update-note-form',
@@ -92,6 +82,15 @@ export default function NoteRoute() {
       return parseWithZod(formData, { schema: UpdateNoteSchema });
     },
   });
+
+  useEffect(() => {
+    if (searchParams.get('status') === 'success') {
+      setSearchParams();
+      formRef.current?.reset();
+      setIsDialogOpen(false);
+    }
+  }, [searchParams, setSearchParams]);
+
   return (
     <div>
       <div className="group flex items-start gap-x-2">
@@ -102,7 +101,7 @@ export default function NoteRoute() {
             </Tooltip>
           </DialogTrigger>
           <DialogContent>
-            <fetcher.Form method="POST" action={updateNoteFormAction} {...getFormProps(form)}>
+            <Form method="POST" action={updateNoteFormAction} {...getFormProps(form)} ref={formRef}>
               <Input {...getInputProps(fields.noteId, { type: 'hidden' })} />
               <DialogHeader>
                 <DialogTitle>Edit note</DialogTitle>
@@ -136,7 +135,7 @@ export default function NoteRoute() {
                 </Button>
                 <FormErrors errorId={form.errorId} errors={form.errors} />
               </DialogFooter>
-            </fetcher.Form>
+            </Form>
           </DialogContent>
         </Dialog>
         <div className="space-y-6">
