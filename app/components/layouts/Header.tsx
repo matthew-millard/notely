@@ -4,6 +4,7 @@ import { formatInitials } from '~/utils';
 import { LogOutForm } from '../forms';
 import { Logo } from '../typography';
 import { Avatar, AvatarFallback, AvatarImage, CommandTrigger, HamburgerMenuToggle } from '../ui';
+import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/Command';
 import Drawer from './Drawer';
 
 export default function Header() {
@@ -29,6 +30,17 @@ export default function Header() {
         </div>
         <div className="flex flex-1 items-center justify-between gap-2 md:justify-end">
           <CommandTrigger {...commandTriggerProps} />
+          <CommandDialog open={isCommandDialogOpen} onOpenChange={setIsCommandDialogOpen}>
+            <CommandInput placeholder="Search notes..." />
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup heading="Suggestions">
+                <CommandItem>Calendar</CommandItem>
+                <CommandItem>Search Emoji</CommandItem>
+                <CommandItem>Calculator</CommandItem>
+              </CommandGroup>
+            </CommandList>
+          </CommandDialog>
           <nav className="hidden items-center gap-x-2 md:flex">
             <Avatar>
               {user?.avatarUrl ? (
