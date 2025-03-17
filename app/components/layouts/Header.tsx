@@ -1,3 +1,4 @@
+import { useFetcher } from '@remix-run/react';
 import { useState } from 'react';
 import { useKbdShortcut, useOptionalUser } from '~/hooks';
 import { formatInitials } from '~/utils';
@@ -9,8 +10,10 @@ import Drawer from './Drawer';
 
 export default function Header() {
   const user = useOptionalUser();
+  const search = useFetcher();
   const [isCommandDialogOpen, setIsCommandDialogOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useKbdShortcut('k', setIsCommandDialogOpen);
   const commandTriggerProps = { isCommandDialogOpen, setIsCommandDialogOpen };
@@ -31,10 +34,19 @@ export default function Header() {
         <div className="flex flex-1 items-center justify-between gap-2 md:justify-end">
           <CommandTrigger {...commandTriggerProps} />
           <CommandDialog open={isCommandDialogOpen} onOpenChange={setIsCommandDialogOpen}>
-            <CommandInput placeholder="Search notes..." />
+            <search.Form role="search">
+              <CommandInput
+                placeholder="Search notes..."
+                value={searchQuery}
+                onValueChange={value => {
+                  setSearchQuery(value);
+                  search.submit({ query: value }, { method: 'GET', action: `/${user?.id}/search` });
+                }}
+              />
+            </search.Form>
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
-              <CommandGroup heading="Suggestions">
+              <CommandGroup heading="Results">
                 <CommandItem>Calendar</CommandItem>
                 <CommandItem>Search Emoji</CommandItem>
                 <CommandItem>Calculator</CommandItem>
