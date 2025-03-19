@@ -3,7 +3,7 @@ import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { json, LoaderFunctionArgs } from '@remix-run/node';
 import { Form, useLoaderData, useSearchParams } from '@remix-run/react';
 import { LoaderCircle, PenIcon } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { requireUserId } from '~/.server/auth';
 import { prisma } from '~/.server/db';
@@ -64,7 +64,9 @@ export default function NoteRoute() {
   const updateNoteFormAction = `/${userId}/notes/${note.id}/update`;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const formRef = useRef<HTMLFormElement>(null);
+  const [title, setTitle] = useState(note.title);
+  const [content, setContent] = useState(note.content);
+  const [noteId, setNoteId] = useState(note.id);
 
   const isSubmitting = useDelayedIsPending({ formAction: updateNoteFormAction });
 
@@ -73,20 +75,20 @@ export default function NoteRoute() {
     constraint: getZodConstraint(UpdateNoteSchema),
     shouldValidate: 'onSubmit',
     shouldRevalidate: 'onInput',
-    defaultValue: {
-      title: note.title,
-      content: note.content,
-      noteId: note.id,
-    },
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: UpdateNoteSchema });
     },
   });
 
   useEffect(() => {
+    setTitle(note.title);
+    setContent(note.content);
+    setNoteId(note.id);
+  }, [note]);
+
+  useEffect(() => {
     if (searchParams.get('status') === 'success') {
       setSearchParams();
-      formRef.current?.reset();
       setIsDialogOpen(false);
     }
   }, [searchParams, setSearchParams]);
@@ -101,8 +103,8 @@ export default function NoteRoute() {
             </Tooltip>
           </DialogTrigger>
           <DialogContent>
-            <Form method="POST" action={updateNoteFormAction} {...getFormProps(form)} ref={formRef}>
-              <Input {...getInputProps(fields.noteId, { type: 'hidden' })} />
+            <Form method="POST" action={updateNoteFormAction} {...getFormProps(form)}>
+              <Input value={noteId} {...getInputProps(fields.noteId, { type: 'hidden' })} />
               <DialogHeader>
                 <DialogTitle>Edit note</DialogTitle>
                 <DialogDescription>Make changes to your note here. Click save when you&apos;re done.</DialogDescription>
@@ -112,7 +114,13 @@ export default function NoteRoute() {
                   <Label htmlFor={fields.title.id} className="">
                     Title
                   </Label>
-                  <Input {...getInputProps(fields.title, { type: 'text' })} autoFocus className="col-span-3" />
+                  <Input
+                    value={title}
+                    onChange={event => setTitle(event.target.value)}
+                    {...getInputProps(fields.title, { type: 'text' })}
+                    autoFocus
+                    className="col-span-3"
+                  />
                   <FieldError field={fields.title} />
                 </div>
                 <div className="grid gap-2">
@@ -120,6 +128,8 @@ export default function NoteRoute() {
                     Content
                   </Label>
                   <textarea
+                    value={content}
+                    onChange={event => setContent(event.target.value)}
                     {...getTextareaProps(fields.content)}
                     rows={10}
                     cols={1}
