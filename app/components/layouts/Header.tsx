@@ -49,7 +49,7 @@ export default function Header() {
           <Dialog open={isCommandDialogOpen} onOpenChange={setIsCommandDialogOpen}>
             <DialogTitle title="Search" />
             <DialogContent>
-              <search.Form className="flex items-center border-b px-3" ref={formRef}>
+              <search.Form className="flex items-center border-b pr-3" ref={formRef}>
                 <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
                 <input
                   type="search"
