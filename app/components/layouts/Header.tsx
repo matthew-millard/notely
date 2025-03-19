@@ -1,6 +1,6 @@
 import { Link, useFetcher } from '@remix-run/react';
 import { Search } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useKbdShortcut, useOptionalUser } from '~/hooks';
 import { type SearchResults } from '~/routes/$userId_+/search';
 import { formatInitials } from '~/utils';
