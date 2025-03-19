@@ -1,6 +1,6 @@
-import { useFetcher } from '@remix-run/react';
+import { Link, useFetcher } from '@remix-run/react';
 import { Search } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useKbdShortcut, useOptionalUser } from '~/hooks';
 import { type SearchResults } from '~/routes/$userId_+/search';
 import { formatInitials } from '~/utils';
@@ -19,7 +19,8 @@ import {
 import Drawer from './Drawer';
 
 export default function Header() {
-  const formRef = useRef<HTMLFormElement>(null);
+  // const formRef = useRef<HTMLFormElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const user = useOptionalUser();
   const search = useFetcher<SearchResults>();
   const data = search?.data;
@@ -49,12 +50,13 @@ export default function Header() {
           <Dialog open={isCommandDialogOpen} onOpenChange={setIsCommandDialogOpen}>
             <DialogTitle title="Search" />
             <DialogContent>
-              <search.Form className="flex items-center border-b pr-3" ref={formRef}>
+              <search.Form className="flex items-center border-b pr-3">
                 <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
                 <input
                   type="search"
                   placeholder="Search notes"
                   autoFocus
+                  ref={inputRef}
                   value={query}
                   onChange={event => {
                     setQuery(event.target.value);
@@ -66,13 +68,20 @@ export default function Header() {
               {query.length > 0 && data?.results ? (
                 <ul className="max-h-[300px] overflow-y-auto overflow-x-hidden">
                   {data.results.length > 0 ? (
-                    data.results.map(result => (
-                      <li
-                        key={result.id}
-                        className="relative flex cursor-default gap-2 select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+                    data.results.map(note => (
+                      <Link
+                        prefetch="intent"
+                        onClick={() => {
+                          setQuery('');
+                          setIsCommandDialogOpen(false);
+                        }}
+                        to={`/${user?.id}/notes/${note.id}`}
+                        key={note.id}
                       >
-                        {result.title}
-                      </li>
+                        <li className="relative flex cursor-default gap-2 select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
+                          {note.title}
+                        </li>
+                      </Link>
                     ))
                   ) : (
                     <p className="py-6 text-center text-sm">No results found.</p>
