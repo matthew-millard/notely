@@ -1,19 +1,32 @@
 import { useFetcher } from '@remix-run/react';
-import { useState } from 'react';
+import { Search } from 'lucide-react';
+import { useRef, useState } from 'react';
 import { useKbdShortcut, useOptionalUser } from '~/hooks';
+import { type SearchResults } from '~/routes/$userId_+/search';
 import { formatInitials } from '~/utils';
 import { LogOutForm } from '../forms';
 import { Logo } from '../typography';
-import { Avatar, AvatarFallback, AvatarImage, CommandTrigger, HamburgerMenuToggle } from '../ui';
-import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/Command';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  CommandTrigger,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  HamburgerMenuToggle,
+} from '../ui';
 import Drawer from './Drawer';
 
 export default function Header() {
+  const formRef = useRef<HTMLFormElement>(null);
   const user = useOptionalUser();
-  const search = useFetcher();
+  const search = useFetcher<SearchResults>();
+  const data = search?.data;
+
   const [isCommandDialogOpen, setIsCommandDialogOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [query, setQuery] = useState('');
 
   useKbdShortcut('k', setIsCommandDialogOpen);
   const commandTriggerProps = { isCommandDialogOpen, setIsCommandDialogOpen };
@@ -33,26 +46,42 @@ export default function Header() {
         </div>
         <div className="flex flex-1 items-center justify-between gap-2 md:justify-end">
           <CommandTrigger {...commandTriggerProps} />
-          <CommandDialog open={isCommandDialogOpen} onOpenChange={setIsCommandDialogOpen}>
-            <search.Form role="search">
-              <CommandInput
-                placeholder="Search notes..."
-                value={searchQuery}
-                onValueChange={value => {
-                  setSearchQuery(value);
-                  search.submit({ query: value }, { method: 'GET', action: `/${user?.id}/search` });
-                }}
-              />
-            </search.Form>
-            <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
-              <CommandGroup heading="Results">
-                <CommandItem>Calendar</CommandItem>
-                <CommandItem>Search Emoji</CommandItem>
-                <CommandItem>Calculator</CommandItem>
-              </CommandGroup>
-            </CommandList>
-          </CommandDialog>
+          <Dialog open={isCommandDialogOpen} onOpenChange={setIsCommandDialogOpen}>
+            <DialogTitle title="Search" />
+            <DialogContent>
+              <search.Form className="flex items-center border-b px-3" ref={formRef}>
+                <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+                <input
+                  type="search"
+                  placeholder="Search notes"
+                  autoFocus
+                  value={query}
+                  onChange={event => {
+                    setQuery(event.target.value);
+                    search.submit({ query: event.target.value }, { action: `/${user?.id}/search` });
+                  }}
+                  className="flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </search.Form>
+              {query.length > 0 && data?.results ? (
+                <ul className="max-h-[300px] overflow-y-auto overflow-x-hidden">
+                  {data.results.length > 0 ? (
+                    data.results.map(result => (
+                      <li
+                        key={result.id}
+                        className="relative flex cursor-default gap-2 select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+                      >
+                        {result.title}
+                      </li>
+                    ))
+                  ) : (
+                    <p className="py-6 text-center text-sm">No results found.</p>
+                  )}
+                </ul>
+              ) : null}
+            </DialogContent>
+          </Dialog>
+
           <nav className="hidden items-center gap-x-2 md:flex">
             <Avatar>
               {user?.avatarUrl ? (
