@@ -1,5 +1,17 @@
+import { NavLink, useRouteLoaderData } from '@remix-run/react';
 import { Dispatch, SetStateAction } from 'react';
-import { Drawer as DrawerPrimitive } from 'vaul';
+import { loader } from '~/routes/$userId_+/_layout';
+import { classNames as cn, timeAgo } from '~/utils';
+import {
+  Drawer as DrawerRoot,
+  DrawerPortal,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerSeparator,
+} from '../ui';
 
 export interface DrawerProps {
   isDrawerOpen: boolean;
@@ -7,36 +19,43 @@ export interface DrawerProps {
 }
 
 export default function Drawer({ isDrawerOpen, setIsDrawerOpen }: DrawerProps) {
+  const data = useRouteLoaderData<typeof loader>('routes/$userId_+/_layout');
+  console.log('data');
   return (
-    <DrawerPrimitive.Root open={isDrawerOpen} onOpenChange={open => setIsDrawerOpen(open)}>
-      <DrawerPrimitive.Portal>
-        <DrawerPrimitive.Overlay className="fixed inset-0 z-50 bg-black/80" />
-        <DrawerPrimitive.Content className="bg-background fixed inset-x-0 bottom-0 z-50 mt-24 flex max-h-[96%] min-h-[60%] flex-col rounded-t-[10px] border">
-          <DrawerPrimitive.Title className="sr-only">Navigation menu</DrawerPrimitive.Title>
-          <DrawerPrimitive.Description className="sr-only">
-            A drawer used as a mobile navigation menu.
-          </DrawerPrimitive.Description>
-          <div className="bg-muted mx-auto mt-6 h-2 w-[100px] rounded-full" />
+    <DrawerRoot open={isDrawerOpen} onOpenChange={open => setIsDrawerOpen(open)}>
+      <DrawerPortal>
+        <DrawerOverlay />
+        <DrawerContent className="h-[80vh] flex flex-col">
+          <DrawerHeader>
+            <DrawerTitle>My notes</DrawerTitle>
+            <DrawerDescription>Choose a different note.</DrawerDescription>
+          </DrawerHeader>
 
-          <nav className="flex flex-col space-y-10 overflow-auto p-6">
-            {/* {navLinks.map(link => (
+          <nav className="flex flex-col overflow-y-auto flex-1 px-4">
+            {data?.notes.map(note => (
               <NavLink
-                to={link.href}
-                key={link.title}
+                to={`/${data.userId}/notes/${note.id}`}
+                key={note.id}
                 prefetch="intent"
+                onClick={() => setIsDrawerOpen(false)}
                 className={({ isActive }) =>
-                  classNames(
-                    'hover:text-foreground/80 text-foreground transition-colors',
-                    isActive ? 'hover:decoration-primary/80 underline decoration-primary underline-offset-4' : ''
-                  )
+                  cn('p-4 font-medium', isActive ? 'bg-accent text-accent-foreground rounded-sm' : '')
                 }
               >
-                {link.title}
+                <p className="flex justify-between h-full items-center">
+                  {note.title}{' '}
+                  <span className="text-xs text-muted-foreground">{timeAgo(new Date(note.createdAt))}</span>
+                </p>
               </NavLink>
-            ))} */}
+            ))}
           </nav>
-        </DrawerPrimitive.Content>
-      </DrawerPrimitive.Portal>
-    </DrawerPrimitive.Root>
+          <DrawerSeparator />
+          <DrawerHeader>
+            <DrawerTitle>Settings</DrawerTitle>
+            <DrawerDescription>My account</DrawerDescription>
+          </DrawerHeader>
+        </DrawerContent>
+      </DrawerPortal>
+    </DrawerRoot>
   );
 }
