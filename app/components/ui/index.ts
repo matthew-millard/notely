@@ -13,6 +13,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from './Dialog';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerPortal,
+  DrawerTitle,
+  DrawerTrigger,
+  DrawerSeparator,
+} from './Drawer';
 import FieldError from './FieldError';
 import FormErrors from './FormError';
 import HamburgerMenuToggle from './HamburgerMenuToggle';
@@ -47,4 +60,15 @@ export {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerPortal,
+  DrawerTitle,
+  DrawerTrigger,
+  DrawerSeparator,
 };

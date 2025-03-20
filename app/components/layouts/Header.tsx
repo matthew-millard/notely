@@ -1,6 +1,6 @@
 import { Link, useFetcher } from '@remix-run/react';
 import { Search } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useKbdShortcut, useOptionalUser } from '~/hooks';
 import { type SearchResults } from '~/routes/$userId_+/search';
 import { formatInitials } from '~/utils';
@@ -13,6 +13,7 @@ import {
   CommandTrigger,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogTitle,
   HamburgerMenuToggle,
 } from '../ui';
@@ -33,6 +34,13 @@ export default function Header() {
   const commandTriggerProps = { isCommandDialogOpen, setIsCommandDialogOpen };
   const drawerProps = { isDrawerOpen, setIsDrawerOpen };
 
+  useEffect(() => {
+    // Reset query to an empty string everytime the dialog is closed
+    if (!isCommandDialogOpen) {
+      setQuery('');
+    }
+  }, [isCommandDialogOpen]);
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
@@ -48,9 +56,10 @@ export default function Header() {
         <div className="flex flex-1 items-center justify-between gap-2 md:justify-end">
           <CommandTrigger {...commandTriggerProps} />
           <Dialog open={isCommandDialogOpen} onOpenChange={setIsCommandDialogOpen}>
-            <DialogTitle title="Search" />
-            <DialogContent>
-              <search.Form className="flex items-center border-b pr-3">
+            <DialogTitle className="sr-only" title="Search" />
+            <DialogDescription className="sr-only">Search for a note</DialogDescription>
+            <DialogContent className="w-[90%] !top-[10%] !translate-y-0 overflow-hidden">
+              <search.Form className="flex items-center border-b px-3">
                 <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
                 <input
                   type="search"
@@ -78,7 +87,7 @@ export default function Header() {
                         to={`/${user?.id}/notes/${note.id}`}
                         key={note.id}
                       >
-                        <li className="relative flex cursor-default gap-2 select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
+                        <li className="px-3 py-1.5 text-sm rounded-sm bg-transparent hover:bg-accent text-accent-foreground outline-none">
                           {note.title}
                         </li>
                       </Link>
