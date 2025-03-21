@@ -1,7 +1,9 @@
-import { NavLink, useRouteLoaderData } from '@remix-run/react';
+import { ExitIcon } from '@radix-ui/react-icons';
+import { Form, NavLink, useRouteLoaderData } from '@remix-run/react';
 import { Dispatch, SetStateAction } from 'react';
+import { useOptionalUser } from '~/hooks';
 import { loader } from '~/routes/$userId_+/_layout';
-import { classNames as cn, timeAgo } from '~/utils';
+import { classNames as cn, formatInitials, timeAgo } from '~/utils';
 import {
   Drawer as DrawerRoot,
   DrawerPortal,
@@ -11,6 +13,11 @@ import {
   DrawerDescription,
   DrawerHeader,
   DrawerSeparator,
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+  DrawerFooter,
+  Button,
 } from '../ui';
 
 export interface DrawerProps {
@@ -20,7 +27,8 @@ export interface DrawerProps {
 
 export default function Drawer({ isDrawerOpen, setIsDrawerOpen }: DrawerProps) {
   const data = useRouteLoaderData<typeof loader>('routes/$userId_+/_layout');
-  console.log('data');
+  const user = useOptionalUser();
+
   return (
     <DrawerRoot open={isDrawerOpen} onOpenChange={open => setIsDrawerOpen(open)}>
       <DrawerPortal>
@@ -44,16 +52,38 @@ export default function Drawer({ isDrawerOpen, setIsDrawerOpen }: DrawerProps) {
               >
                 <p className="flex justify-between h-full items-center">
                   {note.title}{' '}
-                  <span className="text-xs text-muted-foreground">{timeAgo(new Date(note.createdAt))}</span>
+                  <span className="text-xs text-muted-foreground">{timeAgo(new Date(note.updatedAt))}</span>
                 </p>
               </NavLink>
             ))}
           </nav>
+
           <DrawerSeparator />
-          <DrawerHeader>
-            <DrawerTitle>Settings</DrawerTitle>
-            <DrawerDescription>My account</DrawerDescription>
-          </DrawerHeader>
+          <DrawerFooter>
+            <div className="flex justify-between h-full items-center">
+              <div className="flex h-full items-center gap-x-2">
+                <Avatar>
+                  {user?.avatarUrl ? (
+                    <AvatarImage src={user.avatarUrl} />
+                  ) : (
+                    <AvatarFallback>
+                      {formatInitials({
+                        firstName: user?.firstName ?? '',
+                        lastName: user?.lastName ?? '',
+                      })}
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+                <p className="text-sm">Matt Millard</p>
+              </div>
+              <Form method="POST" action="/logout">
+                <Button variant="ghost" size="sm">
+                  <ExitIcon />
+                  Log out
+                </Button>
+              </Form>
+            </div>
+          </DrawerFooter>
         </DrawerContent>
       </DrawerPortal>
     </DrawerRoot>
