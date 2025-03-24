@@ -4,7 +4,8 @@ import { SESSION_KEY } from '~/.server/config';
 import { authenticator } from '~/.server/connections';
 import { prisma } from '~/.server/db';
 import { authSessionStorage } from '~/.server/session';
-import { ProviderNamesSchema } from '~/components/forms/ProviderConnectionForm';
+import { setToastCookie, toastSessionStorage } from '~/.server/toast';
+import { ProviderName, ProviderNamesSchema } from '~/components/forms/ProviderConnectionForm';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const providerName = ProviderNamesSchema.parse(params.provider);
@@ -66,7 +67,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   //   Connection exists already? Make a new session
   if (existingConnection) {
-    return makeSession({ request, userId: existingConnection.userId });
+    return makeSession({ request, userId: existingConnection.userId, providerName });
   }
 
   //   if the email matches a user in the db, then link the account and make new session
@@ -85,7 +86,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       },
     });
 
-    return makeSession({ request, userId: user.id });
+    return makeSession({ request, userId: user.id, providerName });
   }
 
   //   this is a new user, so let's get them signed up
@@ -104,10 +105,18 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     });
   }
 
-  return makeSession({ request, userId: newUser.id });
+  return makeSession({ request, userId: newUser.id, providerName });
 }
 
-async function makeSession({ request, userId }: { request: Request; userId: string }) {
+async function makeSession({
+  request,
+  userId,
+  providerName,
+}: {
+  request: Request;
+  userId: string;
+  providerName: ProviderName;
+}) {
   const session = await prisma.session.create({
     data: {
       userId,
@@ -118,11 +127,26 @@ async function makeSession({ request, userId }: { request: Request; userId: stri
   const authSession = await authSessionStorage.getSession(request.headers.get('cookie'));
   authSession.set(SESSION_KEY, session.id);
 
+  const toastSession = await setToastCookie(request, {
+    id: 'logged-in-with-provider',
+    title: 'Logged in',
+    description: `You have successfully logged into your account with ${
+      providerName.charAt(0).toUpperCase() + providerName.slice(1)
+    }`,
+    type: 'success',
+  });
+
+  const combinedHeaders = new Headers();
+  combinedHeaders.append(
+    'Set-Cookie',
+    await authSessionStorage.commitSession(authSession, {
+      expires: session.expirationDate,
+    })
+  );
+
+  combinedHeaders.append('Set-Cookie', await toastSessionStorage.commitSession(toastSession));
+
   return redirect(`/${userId}`, {
-    headers: {
-      'Set-Cookie': await authSessionStorage.commitSession(authSession, {
-        expires: session.expirationDate,
-      }),
-    },
+    headers: combinedHeaders,
   });
 }
