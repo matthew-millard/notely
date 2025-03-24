@@ -1,11 +1,11 @@
 import { json, LoaderFunctionArgs } from '@remix-run/node';
-import { Form, Link, NavLink, Outlet, useLoaderData, useNavigation } from '@remix-run/react';
-import { PenSquareIcon, Trash2 } from 'lucide-react';
+import { Form, Link, NavLink, Outlet, useLoaderData, useLocation, useNavigation } from '@remix-run/react';
+import { PenSquareIcon, SquarePenIcon, Trash2 } from 'lucide-react';
 import { requireUserId } from '~/.server/auth';
 import { prisma } from '~/.server/db';
 import { Footer, Header } from '~/components/layouts';
 import { H4 } from '~/components/typography';
-import { Tooltip } from '~/components/ui';
+import { Button, Tooltip } from '~/components/ui';
 import { classNames as cn } from '~/utils';
 
 export type Notes = {
@@ -39,6 +39,8 @@ export default function UserDashboardLayout() {
   const isDeleting = (noteId: string) => {
     return navigation.state && navigation.formAction?.includes(`/${noteId}/delete`);
   };
+
+  const showNewNoteButton = useLocation().pathname !== `/${userId}/notes/new`;
 
   return (
     <div className="relative">
@@ -105,6 +107,13 @@ export default function UserDashboardLayout() {
               <div className="mx-auto w-full min-w-0 max-w-2xl">
                 <Outlet context={notes} />
               </div>
+              {showNewNoteButton ? (
+                <Link to={`/${userId}/notes/new`} prefetch="render" className="fixed bottom-6 right-6">
+                  <Button size={'icon'} className="!rounded-full !h-12 !w-12 !drop-shadow-xl [&_svg]:size-5">
+                    <SquarePenIcon />
+                  </Button>
+                </Link>
+              ) : null}
               <div className="hidden text-sm xl:block"></div>
             </main>
           </div>
