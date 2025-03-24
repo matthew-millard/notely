@@ -20,7 +20,6 @@ import {
 import Drawer from './Drawer';
 
 export default function Header() {
-  // const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const user = useOptionalUser();
   const search = useFetcher<SearchResults>();
@@ -58,7 +57,7 @@ export default function Header() {
           <Dialog open={isCommandDialogOpen} onOpenChange={setIsCommandDialogOpen}>
             <DialogTitle className="sr-only" title="Search" />
             <DialogDescription className="sr-only">Search for a note</DialogDescription>
-            <DialogContent className="w-[90%] !top-[10%] !translate-y-0 overflow-hidden">
+            <DialogContent className="!top-[5%] !translate-y-0 overflow-hidden">
               <search.Form className="flex items-center border-b px-3">
                 <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
                 <input
