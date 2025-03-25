@@ -1,8 +1,8 @@
-import { ExitIcon } from '@radix-ui/react-icons';
+import { ExitIcon, TrashIcon } from '@radix-ui/react-icons';
 import { Form, Link, NavLink, useRouteLoaderData } from '@remix-run/react';
 import { ArrowRightIcon } from 'lucide-react';
-import { Dispatch, SetStateAction } from 'react';
-import { useOptionalUser } from '~/hooks';
+import React, { Dispatch, SetStateAction, useState } from 'react';
+import { useIsPending, useOptionalUser } from '~/hooks';
 import { loader } from '~/routes/$userId_+/_layout';
 import { classNames as cn, formatInitials, timeAgo } from '~/utils';
 import { Logo } from '../typography';
@@ -20,6 +20,9 @@ import {
   AvatarFallback,
   DrawerFooter,
   Button,
+  Dialog,
+  DialogHeader,
+  DialogContent,
 } from '../ui';
 import ThemeSwitch from '../ui/ThemeSwitch';
 
@@ -31,34 +34,130 @@ export interface DrawerProps {
 export default function Drawer({ isDrawerOpen, setIsDrawerOpen }: DrawerProps) {
   const data = useRouteLoaderData<typeof loader>('routes/$userId_+/_layout');
   const user = useOptionalUser();
+  const [isDeleteNoteDialogOpen, setIsDeleteNoteDialogOpen] = useState(false);
+  const [noteToDelete, setNoteToDelete] = useState<string | null>(null);
+  const [swipingNote, setSwipingNote] = useState<{
+    id: string;
+    startX: number;
+    currentX: number;
+  } | null>(null);
+
+  const deleteNoteFormAction = `/${user?.id}/notes/${noteToDelete}/delete`;
+
+  const isDeleting = useIsPending({ formAction: deleteNoteFormAction });
+
+  const handleTouch = (event: React.TouchEvent<HTMLAnchorElement>, noteId: string) => {
+    switch (event.type) {
+      case 'touchstart':
+        {
+          setSwipingNote({
+            id: noteId,
+            startX: event.touches[0].screenX,
+            currentX: event.touches[0].screenX,
+          });
+        }
+        break;
+
+      case 'touchmove':
+        if (swipingNote?.id === noteId) {
+          setSwipingNote(prev => (prev ? { ...prev, currentX: event.touches[0].screenX } : null));
+        }
+        break;
+
+      case 'touchend':
+        if (swipingNote?.id === noteId) {
+          const swipeDistance = swipingNote.startX - swipingNote.currentX;
+
+          if (swipeDistance >= 100) {
+            setNoteToDelete(noteId);
+            setIsDeleteNoteDialogOpen(true);
+          }
+
+          setSwipingNote(null);
+        }
+        break;
+    }
+  };
+
+  const getSwipeTransform = (noteId: string) => {
+    if (!swipingNote || swipingNote.id !== noteId) {
+      return 'translateX(0)';
+    }
+    const diff = swipingNote.startX - swipingNote.currentX;
+    return `translateX(-${Math.min(diff, 100)}px)`;
+  };
 
   return (
     <DrawerRoot open={isDrawerOpen} onOpenChange={open => setIsDrawerOpen(open)}>
+      <Dialog open={isDeleteNoteDialogOpen} onOpenChange={setIsDeleteNoteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <h2 className="text-lg font-semibold">Delete Note</h2>
+          </DialogHeader>
+          <p className="text-foreground">Are you sure you want to delete this note? This action cannot be undone.</p>
+          <div className="flex justify-end gap-3 mt-4">
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setIsDeleteNoteDialogOpen(false);
+                setNoteToDelete(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Form
+              method="POST"
+              action={deleteNoteFormAction}
+              onSubmit={() => {
+                setIsDeleteNoteDialogOpen(false);
+                setIsDrawerOpen(false);
+              }}
+            >
+              <Button variant="destructive" type="submit">
+                Delete
+              </Button>
+            </Form>
+          </div>
+        </DialogContent>
+      </Dialog>
       <DrawerPortal>
         <DrawerOverlay />
         {user ? (
           <DrawerContent className="max-h-[80vh] flex flex-col">
             <DrawerHeader>
               <DrawerTitle>My notes</DrawerTitle>
-              <DrawerDescription>Choose a different note.</DrawerDescription>
+              <DrawerDescription>← swipe to delete a note</DrawerDescription>
             </DrawerHeader>
 
             <nav className="flex flex-col overflow-y-auto flex-1 px-4 pb-2 space-y-1">
               {data?.notes.map(note => (
-                <NavLink
-                  to={`/${data.userId}/notes/${note.id}`}
-                  key={note.id}
-                  prefetch="intent"
-                  onClick={() => setIsDrawerOpen(false)}
-                  className={({ isActive }) =>
-                    cn('p-4 font-medium hover:bg-accent rounded-sm', isActive ? 'bg-accent text-accent-foreground' : '')
-                  }
-                >
-                  <p className="flex justify-between h-full items-center">
-                    {note.title}{' '}
-                    <span className="text-xs text-muted-foreground">{timeAgo(new Date(note.updatedAt))}</span>
-                  </p>
-                </NavLink>
+                <div key={note.id} className="relative">
+                  <div className="absolute inset-0 bg-destructive text-destructive-foreground rounded-sm flex items-center justify-end pr-8">
+                    <TrashIcon className="h-5 w-5" />
+                  </div>
+                  <NavLink
+                    to={`/${data.userId}/notes/${note.id}`}
+                    prefetch="intent"
+                    onClick={() => setIsDrawerOpen(false)}
+                    onTouchStart={event => handleTouch(event, note.id)}
+                    onTouchMove={event => handleTouch(event, note.id)}
+                    onTouchEnd={event => handleTouch(event, note.id)}
+                    style={{
+                      transform: getSwipeTransform(note.id),
+                    }}
+                    className={({ isActive }) =>
+                      cn(
+                        'p-4 font-medium hover:bg-accent rounded-sm block bg-background transition-transform',
+                        isActive ? 'bg-accent text-accent-foreground' : ''
+                      )
+                    }
+                  >
+                    <p className="flex justify-between h-full items-center">
+                      {note.title}{' '}
+                      <span className="text-xs text-muted-foreground">{timeAgo(new Date(note.updatedAt))}</span>
+                    </p>
+                  </NavLink>
+                </div>
               ))}
             </nav>
 
