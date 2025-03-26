@@ -2,7 +2,7 @@ import { ExitIcon, TrashIcon } from '@radix-ui/react-icons';
 import { Form, Link, NavLink, useRouteLoaderData } from '@remix-run/react';
 import { ArrowRightIcon } from 'lucide-react';
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import { useIsPending, useOptionalUser } from '~/hooks';
+import { useOptionalUser } from '~/hooks';
 import { loader } from '~/routes/$userId_+/_layout';
 import { classNames as cn, formatInitials, timeAgo } from '~/utils';
 import { Logo } from '../typography';
@@ -42,9 +42,9 @@ export default function Drawer({ isDrawerOpen, setIsDrawerOpen }: DrawerProps) {
     currentX: number;
   } | null>(null);
 
-  const deleteNoteFormAction = `/${user?.id}/notes/${noteToDelete}/delete`;
+  const hasNotes = data && data.notes.length > 0 ? true : false;
 
-  const isDeleting = useIsPending({ formAction: deleteNoteFormAction });
+  const deleteNoteFormAction = `/${user?.id}/notes/${noteToDelete}/delete`;
 
   const handleTouch = (event: React.TouchEvent<HTMLAnchorElement>, noteId: string) => {
     switch (event.type) {
@@ -126,39 +126,44 @@ export default function Drawer({ isDrawerOpen, setIsDrawerOpen }: DrawerProps) {
           <DrawerContent className="max-h-[80vh] flex flex-col">
             <DrawerHeader>
               <DrawerTitle>My notes</DrawerTitle>
-              <DrawerDescription>← swipe to delete a note</DrawerDescription>
+              <DrawerDescription className="sr-only">List of all notes</DrawerDescription>
+              <p className="text-sm text-muted-foreground">{hasNotes ? '← swipe to delete a note' : ''}</p>
             </DrawerHeader>
 
             <nav className="flex flex-col overflow-y-auto flex-1 px-4 pb-2 space-y-1">
-              {data?.notes.map(note => (
-                <div key={note.id} className="relative">
-                  <div className="absolute inset-0 bg-destructive text-destructive-foreground rounded-sm flex items-center justify-end pr-8">
-                    <TrashIcon className="h-5 w-5" />
+              {hasNotes ? (
+                data?.notes.map(note => (
+                  <div key={note.id} className="relative">
+                    <div className="absolute inset-0 bg-destructive text-destructive-foreground rounded-sm flex items-center justify-end pr-8">
+                      <TrashIcon className="h-5 w-5" />
+                    </div>
+                    <NavLink
+                      to={`/${data.userId}/notes/${note.id}`}
+                      prefetch="intent"
+                      onClick={() => setIsDrawerOpen(false)}
+                      onTouchStart={event => handleTouch(event, note.id)}
+                      onTouchMove={event => handleTouch(event, note.id)}
+                      onTouchEnd={event => handleTouch(event, note.id)}
+                      style={{
+                        transform: getSwipeTransform(note.id),
+                      }}
+                      className={({ isActive }) =>
+                        cn(
+                          'p-4 font-medium hover:bg-accent rounded-sm block bg-background transition-transform',
+                          isActive ? 'bg-accent text-accent-foreground' : ''
+                        )
+                      }
+                    >
+                      <p className="flex justify-between h-full items-center">
+                        {note.title}{' '}
+                        <span className="text-xs text-muted-foreground">{timeAgo(new Date(note.updatedAt))}</span>
+                      </p>
+                    </NavLink>
                   </div>
-                  <NavLink
-                    to={`/${data.userId}/notes/${note.id}`}
-                    prefetch="intent"
-                    onClick={() => setIsDrawerOpen(false)}
-                    onTouchStart={event => handleTouch(event, note.id)}
-                    onTouchMove={event => handleTouch(event, note.id)}
-                    onTouchEnd={event => handleTouch(event, note.id)}
-                    style={{
-                      transform: getSwipeTransform(note.id),
-                    }}
-                    className={({ isActive }) =>
-                      cn(
-                        'p-4 font-medium hover:bg-accent rounded-sm block bg-background transition-transform',
-                        isActive ? 'bg-accent text-accent-foreground' : ''
-                      )
-                    }
-                  >
-                    <p className="flex justify-between h-full items-center">
-                      {note.title}{' '}
-                      <span className="text-xs text-muted-foreground">{timeAgo(new Date(note.updatedAt))}</span>
-                    </p>
-                  </NavLink>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-muted-foreground italic pb-2">You currently don&apos;t have any notes</p>
+              )}
             </nav>
 
             <DrawerSeparator />
@@ -179,12 +184,15 @@ export default function Drawer({ isDrawerOpen, setIsDrawerOpen }: DrawerProps) {
                   </Avatar>
                   <p className="text-sm">{`${user?.firstName} ${user?.lastName}`}</p>
                 </div>
-                <Form method="POST" action="/logout">
-                  <Button variant="ghost" size="sm">
-                    <ExitIcon />
-                    Log out
-                  </Button>
-                </Form>
+                <div className="flex gap-x-1">
+                  <ThemeSwitch />
+                  <Form method="POST" action="/logout">
+                    <Button variant="ghost" size="sm">
+                      <ExitIcon />
+                      Log out
+                    </Button>
+                  </Form>
+                </div>
               </div>
             </DrawerFooter>
           </DrawerContent>
