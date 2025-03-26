@@ -6,10 +6,13 @@ import { CODE_QUERY_PARAM, TARGET_QUERY_PARAM, TYPE_QUERY_PARAM, VerifySchema } 
 import { COOKIE_PREFIX } from './config';
 import { prisma } from './db';
 import { ENV } from './env';
+import { setToastCookie } from './toast';
+
+export const resetPasswordUserSessionKey = 'user';
 
 interface Verification {
   code: string;
-  type: 'sign-up';
+  type: 'sign-up' | 'reset-password';
   target: string;
 }
 
@@ -63,6 +66,11 @@ export async function validateRequest(request: Request, body: URLSearchParams | 
       await deleteVerification({ target, type });
       return handleSignUpVerification({ request, target });
     }
+
+    case 'reset-password': {
+      await deleteVerification({ target, type });
+      return handleResetPasswordVerification({ request, submission });
+    }
   }
 }
 
@@ -114,6 +122,28 @@ export async function handleSignUpVerification({ request, target }: { request: R
   return redirect('/complete-profile', {
     headers: {
       'Set-Cookie': await verifySessionStorage.commitSession(verifySession),
+    },
+  });
+}
+
+export async function handleResetPasswordVerification({ request, target }: { request: Request; target: string }) {
+  const user = await prisma.user.findFirst({
+    where: { email: target },
+    select: { email: true, id: true, firstName: true },
+  });
+
+  // we don't want to say the user is not found if the email is not found
+  // because that would allow an attacker to check if an email is registered
+
+  if (!user) {
+    return json({ status: 'error' } as const, { status: 400 });
+  }
+
+  const verifySession = await verifySessionStorage.getSession(request.headers.get('cookie'));
+  verifySession.set(resetPasswordUserSessionKey, user);
+  return redirect('/reset-password', {
+    headers: {
+      'set-cookie': await verifySessionStorage.commitSession(verifySession),
     },
   });
 }

@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/com
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '~/components/ui/OneTimePasswordInput';
 import { useDelayedIsPending } from '~/hooks';
 
-export const TYPES = ['sign-up'] as const; // add more types of verification here
+export const TYPES = ['sign-up', 'reset-password'] as const; // add more types of verification here
 const VerificationTypeSchema = z.enum(TYPES);
 export const TYPE_QUERY_PARAM = 'type';
 export const TARGET_QUERY_PARAM = 'target';
