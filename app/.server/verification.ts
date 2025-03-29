@@ -6,7 +6,6 @@ import { CODE_QUERY_PARAM, TARGET_QUERY_PARAM, TYPE_QUERY_PARAM, VerifySchema } 
 import { COOKIE_PREFIX } from './config';
 import { prisma } from './db';
 import { ENV } from './env';
-import { setToastCookie } from './toast';
 
 export const resetPasswordUserSessionKey = 'user';
 
@@ -16,7 +15,7 @@ interface Verification {
   target: string;
 }
 
-export const VERIFY_SESSION_KEY = 'email-verification';
+export const VERIFY_SESSION_KEY = 'verification';
 
 export const verifySessionStorage = createCookieSessionStorage({
   cookie: {
@@ -69,7 +68,7 @@ export async function validateRequest(request: Request, body: URLSearchParams | 
 
     case 'reset-password': {
       await deleteVerification({ target, type });
-      return handleResetPasswordVerification({ request, submission });
+      return handleResetPasswordVerification({ request, target });
     }
   }
 }
