@@ -59,7 +59,11 @@ export default function LoginForm({ className, ...props }: React.ComponentPropsW
                 <div className="-mt-1 grid gap-2">
                   <div className="flex items-center">
                     <Label htmlFor={fields.password.id}>Password</Label>
-                    <Link to="/forgot-password" className="ml-auto text-sm underline-offset-4 hover:underline">
+                    <Link
+                      to="/forgot-password"
+                      prefetch="intent"
+                      className="ml-auto text-sm underline-offset-4 hover:underline"
+                    >
                       Forgot your password?
                     </Link>
                   </div>

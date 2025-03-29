@@ -66,8 +66,8 @@ export async function action({ request }: ActionFunctionArgs) {
   redirectToUrl.searchParams.set(TYPE_QUERY_PARAM, type);
   redirectToUrl.searchParams.set(TARGET_QUERY_PARAM, email);
 
-  const verifyUrl = new URL(redirectToUrl);
-  verifyUrl.searchParams.set(CODE_QUERY_PARAM, otp); // Magic link
+  const magicLinkUrl = new URL(redirectToUrl);
+  magicLinkUrl.searchParams.set(CODE_QUERY_PARAM, otp); // Magic link
 
   const verificationData = {
     type,
@@ -95,7 +95,7 @@ export async function action({ request }: ActionFunctionArgs) {
     from: 'Notely <no-reply@notely.ca>',
     to: [email],
     subject: `Code to reset your password - ${otp}`,
-    reactEmailTemplate: <ResetPasswordEmail otp={otp} verifyUrl={verifyUrl.toString()} />,
+    reactEmailTemplate: <ResetPasswordEmail otp={otp} verifyUrl={magicLinkUrl.toString()} />,
   });
 
   if (response.status !== 200) {
@@ -144,7 +144,7 @@ export default function ForgotPasswordRoute() {
               </Button>
               <FormErrors errors={form.errors} errorId={form.errorId} />
               <div className="text-center text-sm">
-                <Link to="/login" className="hover:underline underline-offset-4">
+                <Link to="/login" prefetch="intent" className="hover:underline underline-offset-4">
                   Go back
                 </Link>
               </div>
