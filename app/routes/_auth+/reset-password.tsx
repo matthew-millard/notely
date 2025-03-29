@@ -2,6 +2,7 @@ import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { ActionFunctionArgs, json, LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Form, useActionData, useLoaderData } from '@remix-run/react';
+import { LoaderCircle } from 'lucide-react';
 import { z } from 'zod';
 import PasswordResetConfirmation from 'emails/password-reset-confirmation-email';
 import { prisma } from '~/.server/db';
@@ -10,10 +11,9 @@ import { setToastCookie, toastSessionStorage } from '~/.server/toast';
 import { resetPasswordUserSessionKey, verifySessionStorage } from '~/.server/verification';
 import { Button, FieldError, FormErrors, Input, Label } from '~/components/ui';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/Card';
+import { useIsPending } from '~/hooks';
 import { hashPassword } from '~/utils';
 import { PasswordSchema } from '~/utils/schemas';
-import { LoaderCircle } from 'lucide-react';
-import { useIsPending } from '~/hooks';
 
 const ResetPasswordSchema = z
   .object({

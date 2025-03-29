@@ -32,6 +32,7 @@ export async function action({ request }: ActionFunctionArgs) {
         },
         select: {
           id: true,
+          password: true,
         },
       });
 
@@ -39,6 +40,18 @@ export async function action({ request }: ActionFunctionArgs) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'There is no account associated with this email address.',
+          path: ['email'],
+        });
+        return z.NEVER;
+      }
+
+      if (!user.password) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+
+          message:
+            'Looks like you signed up using Facebook or Google. Please log in using your social provider to access your account.',
+
           path: ['email'],
         });
         return z.NEVER;
