@@ -3,13 +3,17 @@ import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { ActionFunctionArgs, json, LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Form, useActionData, useLoaderData } from '@remix-run/react';
 import { z } from 'zod';
+import PasswordResetConfirmation from 'emails/password-reset-confirmation-email';
 import { prisma } from '~/.server/db';
+import { sendEmail } from '~/.server/email';
 import { setToastCookie, toastSessionStorage } from '~/.server/toast';
 import { resetPasswordUserSessionKey, verifySessionStorage } from '~/.server/verification';
 import { Button, FieldError, FormErrors, Input, Label } from '~/components/ui';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/Card';
 import { hashPassword } from '~/utils';
 import { PasswordSchema } from '~/utils/schemas';
+import { LoaderCircle } from 'lucide-react';
+import { useIsPending } from '~/hooks';
 
 const ResetPasswordSchema = z
   .object({
@@ -62,9 +66,6 @@ export async function action({ request }: ActionFunctionArgs) {
     },
     data: {
       password: {
-        create: {
-          hash: hashedPassword,
-        },
         update: {
           hash: hashedPassword,
         },
@@ -78,10 +79,26 @@ export async function action({ request }: ActionFunctionArgs) {
     });
   }
 
+  // The idea is to log the error but continue with the rest of the password reset flow
+  let emailError = false;
+  try {
+    await sendEmail({
+      from: 'Notely <no-reply@notely.ca>',
+      reactEmailTemplate: <PasswordResetConfirmation firstName={userWithUpdatedPassword.firstName} />,
+      subject: 'You have successfully reset your password',
+      to: [userWithUpdatedPassword.email],
+    });
+  } catch (error) {
+    console.error('Failed to send password reset confirmation email:', error);
+    emailError = true;
+  }
+
   const toastSession = await setToastCookie(request, {
     id: 'reset-password',
     title: 'Your password has been reset.',
-    description: 'You can now log in with your new password.',
+    description: emailError
+      ? 'You can now log in with your new password. (Note: Confirmation email could not be sent)'
+      : 'You can now log in with your new password.',
     type: 'success',
   });
 
@@ -96,6 +113,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function ResetPasswordRoute() {
   const { user } = useLoaderData<typeof loader>();
+  const isPending = useIsPending();
 
   const [form, fields] = useForm({
     id: 'reset-password-form',
@@ -131,7 +149,7 @@ export default function ResetPasswordRoute() {
       </CardContent>
       <CardFooter>
         <Button type="submit" form={form.id} className="w-full">
-          Submit
+          {isPending ? <LoaderCircle className="animate-spin" /> : 'Set new password'}
         </Button>
       </CardFooter>
     </Card>

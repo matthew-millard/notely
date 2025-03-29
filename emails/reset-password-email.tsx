@@ -23,7 +23,7 @@ const ResetPasswordEmail = ({ otp, verifyUrl }: ResetPasswordEmailProps) => {
       <Head />
       <Tailwind config={tailwindConfig}>
         <Body className="bg-white font-sans">
-          <Preview>Verify your email address to get started</Preview>
+          <Preview>Request to reset your password</Preview>
 
           <Container className="mx-auto py-20 px-2">
             <Section className="p-8" style={{ boxShadow: '0 0 0 1px #e2e8f0', borderRadius: '6px' }}>

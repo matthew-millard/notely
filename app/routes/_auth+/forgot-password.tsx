@@ -3,12 +3,14 @@ import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { generateTOTP } from '@epic-web/totp';
 import { ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { Form, Link, useActionData } from '@remix-run/react';
+import { LoaderCircle } from 'lucide-react';
 import { z } from 'zod';
 import ResetPasswordEmail from 'emails/reset-password-email';
 import { prisma } from '~/.server/db';
 import { sendEmail } from '~/.server/email';
 import { Button, FieldError, FormErrors, Input, Label } from '~/components/ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/Card';
+import { useIsPending } from '~/hooks';
 import { getDomainUrl } from '~/utils';
 import { EmailSchema } from '~/utils/schemas';
 import { CODE_QUERY_PARAM, TARGET_QUERY_PARAM, TYPE_QUERY_PARAM } from './verify';
@@ -106,6 +108,8 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function ForgotPasswordRoute() {
+  const isPending = useIsPending();
+
   const [form, fields] = useForm({
     id: 'forgot-password-form',
     lastResult: useActionData<SubmissionResult<string[]>>(),
@@ -140,7 +144,7 @@ export default function ForgotPasswordRoute() {
 
             <div className="grid gap-y-2">
               <Button type="submit" className="-mt-1 w-full">
-                Send email
+                {isPending ? <LoaderCircle className="animate-spin" /> : 'Send email'}
               </Button>
               <FormErrors errors={form.errors} errorId={form.errorId} />
               <div className="text-center text-sm">
