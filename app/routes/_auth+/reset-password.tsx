@@ -12,6 +12,8 @@ import { Button, FieldError, FormErrors, Input, Label } from '~/components/ui';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/Card';
 import { hashPassword } from '~/utils';
 import { PasswordSchema } from '~/utils/schemas';
+import { LoaderCircle } from 'lucide-react';
+import { useIsPending } from '~/hooks';
 
 const ResetPasswordSchema = z
   .object({
@@ -111,6 +113,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function ResetPasswordRoute() {
   const { user } = useLoaderData<typeof loader>();
+  const isPending = useIsPending();
 
   const [form, fields] = useForm({
     id: 'reset-password-form',
@@ -146,7 +149,7 @@ export default function ResetPasswordRoute() {
       </CardContent>
       <CardFooter>
         <Button type="submit" form={form.id} className="w-full">
-          Submit
+          {isPending ? <LoaderCircle className="animate-spin" /> : 'Set new password'}
         </Button>
       </CardFooter>
     </Card>
