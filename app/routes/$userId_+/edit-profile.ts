@@ -1,11 +1,10 @@
-import { ActionFunctionArgs, json, redirect } from '@remix-run/node';
-import { requireUserId } from '~/.server/auth';
-import { ParamsSchema } from './notes+/$noteId';
-import { z } from 'zod';
 import { parseWithZod } from '@conform-to/zod';
-import { EditProfileSchema } from '~/components/ui/EditProfile';
+import { ActionFunctionArgs, json, redirect } from '@remix-run/node';
+import { z } from 'zod';
+import { requireUserId } from '~/.server/auth';
 import { prisma } from '~/.server/db';
 import { setToastCookie, toastSessionStorage } from '~/.server/toast';
+import { EditProfileSchema } from '~/components/ui/EditProfile';
 
 export async function loader() {
   throw redirect('/');
@@ -61,12 +60,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
     type: 'success',
   });
 
-  return json(
-    { status: 'ok' },
-    {
-      headers: {
-        'Set-Cookie': await toastSessionStorage.commitSession(toastSession),
-      },
-    }
-  );
+  return json(submission.reply(), {
+    headers: {
+      'Set-Cookie': await toastSessionStorage.commitSession(toastSession),
+    },
+  });
 }
