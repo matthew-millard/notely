@@ -15,6 +15,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogTitle,
+  EditProfile,
   HamburgerMenuToggle,
 } from '../ui';
 import Drawer from './Drawer';
@@ -26,6 +27,7 @@ export default function Header() {
   const data = search?.data;
 
   const [isCommandDialogOpen, setIsCommandDialogOpen] = useState(false);
+  const [isEditProfileDialogOpen, setIsEditProfileDialogOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [query, setQuery] = useState('');
 
@@ -100,18 +102,24 @@ export default function Header() {
           </Dialog>
 
           <nav className="hidden items-center gap-x-2 md:flex">
-            <Avatar>
-              {user?.avatarUrl ? (
-                <AvatarImage src={user.avatarUrl} />
-              ) : (
-                <AvatarFallback>
-                  {formatInitials({
-                    firstName: user?.firstName ?? '',
-                    lastName: user?.lastName ?? '',
-                  })}
-                </AvatarFallback>
-              )}
-            </Avatar>
+            <EditProfile
+              isEditProfileDialogOpen={isEditProfileDialogOpen}
+              setIsEditProfileDialogOpen={setIsEditProfileDialogOpen}
+            />
+            <button type="button" onClick={() => setIsEditProfileDialogOpen(true)}>
+              <Avatar>
+                {user?.avatarUrl ? (
+                  <AvatarImage src={user.avatarUrl} />
+                ) : (
+                  <AvatarFallback>
+                    {formatInitials({
+                      firstName: user?.firstName ?? '',
+                      lastName: user?.lastName ?? '',
+                    })}
+                  </AvatarFallback>
+                )}
+              </Avatar>
+            </button>
             <LogOutForm />
           </nav>
         </div>
