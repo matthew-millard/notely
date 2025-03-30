@@ -1,17 +1,17 @@
-import { useActionData, useFetcher, useRouteLoaderData } from '@remix-run/react';
-import React, { Dispatch, SetStateAction } from 'react';
-import { loader } from '~/root';
-import { Button } from './Button';
-import Input from './Input';
-import Label from './Label';
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from './Sheet';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
-import { z } from 'zod';
-import { FirstNameSchema, LastNameSchema } from '~/utils/schemas';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
-import { action } from '~/routes/$userId_+/edit-profile';
+import { useRouteLoaderData, useFetcher } from '@remix-run/react';
+import { LoaderCircle } from 'lucide-react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
+import { z } from 'zod';
+import { loader } from '~/root';
+import { FirstNameSchema, LastNameSchema } from '~/utils/schemas';
+import { Button } from './Button';
 import FieldError from './FieldError';
 import FormErrors from './FormError';
+import Input from './Input';
+import Label from './Label';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from './Sheet';
 
 interface EditProfileProps {
   isEditProfileDialogOpen: boolean;
@@ -25,12 +25,16 @@ export const EditProfileSchema = z.object({
 
 export default function EditProfile({ isEditProfileDialogOpen, setIsEditProfileDialogOpen }: EditProfileProps) {
   const data = useRouteLoaderData<typeof loader>('root');
-  const updateNameForm = useFetcher();
-  const updateNameAction = `/${data?.user?.id}/edit-profile`;
+  const editProfileAction = `/${data?.user?.id}/edit-profile`;
+  const fetcher = useFetcher({ key: 'edit-profile' });
+  const isFetching = fetcher.state !== 'idle' && fetcher.formAction === editProfileAction;
+  const [name, setName] = useState({
+    firstName: data?.user?.firstName,
+    lastName: data?.user?.lastName,
+  });
 
   const [form, fields] = useForm({
     id: 'edit-profile-form',
-    lastResult: useActionData<typeof action>(),
     constraint: getZodConstraint(EditProfileSchema),
     shouldValidate: 'onSubmit',
     shouldRevalidate: 'onInput',
@@ -39,11 +43,8 @@ export default function EditProfile({ isEditProfileDialogOpen, setIsEditProfileD
         schema: EditProfileSchema,
       });
     },
-    defaultValue: {
-      firstName: data?.user?.firstName,
-      lastName: data?.user?.lastName,
-    },
   });
+
   return (
     <Sheet open={isEditProfileDialogOpen} onOpenChange={setIsEditProfileDialogOpen}>
       <SheetContent>
@@ -51,33 +52,39 @@ export default function EditProfile({ isEditProfileDialogOpen, setIsEditProfileD
           <SheetTitle>Edit profile</SheetTitle>
           <SheetDescription>Make changes to your profile here. Click save when you&apos;re done.</SheetDescription>
         </SheetHeader>
-        <updateNameForm.Form
-          {...getFormProps(form)}
-          method="POST"
-          action={updateNameAction}
-          className="grid space-y-3 py-4"
-        >
+        <fetcher.Form {...getFormProps(form)} method="POST" action={editProfileAction} className="grid space-y-3 py-4">
           <div className="grid gap-2">
             <Label htmlFor={fields.firstName.id} className="">
               First name
             </Label>
-            <Input {...getInputProps(fields.firstName, { type: 'text' })} autoFocus />
+            <Input
+              value={name.firstName}
+              onChange={event => setName(prev => ({ ...prev, firstName: event.target.value }))}
+              {...getInputProps(fields.firstName, { type: 'text' })}
+              autoFocus
+            />
             <FieldError field={fields.firstName} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor={fields.lastName.id} className="">
               Last name
             </Label>
-            <Input {...getInputProps(fields.lastName, { type: 'text' })} className="col-span-3" />
+            <Input
+              value={name.lastName}
+              onChange={event => setName(prev => ({ ...prev, lastName: event.target.value }))}
+              {...getInputProps(fields.lastName, { type: 'text' })}
+              className="col-span-3"
+            />
             <FieldError field={fields.lastName} />
           </div>
-        </updateNameForm.Form>
-        <SheetFooter>
-          <FormErrors errors={form.errors} errorId={form.errorId} />
-          <Button type="submit" form={form.id}>
-            Save changes
-          </Button>
-        </SheetFooter>
+
+          <div>
+            <FormErrors errors={form.errors} errorId={form.errorId} />
+            <Button type="submit" disabled={isFetching} className="w-full">
+              {isFetching ? <LoaderCircle className="animate-spin" /> : 'Save changes'}
+            </Button>
+          </div>
+        </fetcher.Form>
       </SheetContent>
     </Sheet>
   );
