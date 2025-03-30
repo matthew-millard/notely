@@ -26,6 +26,7 @@ import {
   DrawerTrigger,
   DrawerSeparator,
 } from './Drawer';
+import EditProfile from './EditProfile';
 import FieldError from './FieldError';
 import FormErrors from './FormError';
 import HamburgerMenuToggle from './HamburgerMenuToggle';
@@ -71,4 +72,5 @@ export {
   DrawerTitle,
   DrawerTrigger,
   DrawerSeparator,
+  EditProfile,
 };
