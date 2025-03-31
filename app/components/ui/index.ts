@@ -32,6 +32,7 @@ import FormErrors from './FormError';
 import HamburgerMenuToggle from './HamburgerMenuToggle';
 import Input from './Input';
 import Label from './Label';
+import { Separator } from './Separator';
 import Tooltip, { TooltipRoot, TooltipContent, TooltipProvider, TooltipTrigger } from './Tooltip';
 
 export {
@@ -73,4 +74,5 @@ export {
   DrawerTrigger,
   DrawerSeparator,
   EditProfile,
+  Separator,
 };
