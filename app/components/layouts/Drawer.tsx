@@ -23,6 +23,7 @@ import {
   Dialog,
   DialogHeader,
   DialogContent,
+  EditProfile,
 } from '../ui';
 import ThemeSwitch from '../ui/ThemeSwitch';
 
@@ -34,6 +35,7 @@ export interface DrawerProps {
 export default function Drawer({ isDrawerOpen, setIsDrawerOpen }: DrawerProps) {
   const data = useRouteLoaderData<typeof loader>('routes/$userId_+/_layout');
   const user = useOptionalUser();
+  const [isEditProfileDialogOpen, setIsEditProfileDialogOpen] = useState(false);
   const [isDeleteNoteDialogOpen, setIsDeleteNoteDialogOpen] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState<string | null>(null);
   const [swipingNote, setSwipingNote] = useState<{
@@ -169,7 +171,16 @@ export default function Drawer({ isDrawerOpen, setIsDrawerOpen }: DrawerProps) {
             <DrawerSeparator />
             <DrawerFooter>
               <div className="flex justify-between h-full items-center">
-                <div className="flex h-full items-center gap-x-2">
+                <EditProfile
+                  isEditProfileDialogOpen={isEditProfileDialogOpen}
+                  setIsEditProfileDialogOpen={setIsEditProfileDialogOpen}
+                  side="top"
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsEditProfileDialogOpen(true)}
+                  className="flex h-full items-center gap-x-2"
+                >
                   <Avatar>
                     {user?.avatarUrl ? (
                       <AvatarImage src={user.avatarUrl} />
@@ -183,7 +194,8 @@ export default function Drawer({ isDrawerOpen, setIsDrawerOpen }: DrawerProps) {
                     )}
                   </Avatar>
                   <p className="text-sm">{`${user?.firstName} ${user?.lastName}`}</p>
-                </div>
+                </button>
+
                 <div className="flex gap-x-1">
                   <ThemeSwitch />
                   <Form method="POST" action="/logout">
