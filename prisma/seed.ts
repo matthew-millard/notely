@@ -15,7 +15,7 @@ async function seed(): Promise<void> {
       data: {
         firstName: 'Matt',
         lastName: 'Millard',
-        email: 'matt.millard@gmail.com',
+        email: 'matthew.richie.millard@gmail.com',
         password: {
           create: {
             hash: hashPassword('Password123!'),

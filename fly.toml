@@ -1,0 +1,26 @@
+# fly.toml app configuration file generated for notely on 2025-03-30T23:39:07-04:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'notely'
+primary_region = 'yul'
+
+[build]
+
+[deploy]
+  release_command = 'npx prisma migrate deploy'
+
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
