@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for notely on 2025-03-30T23:39:07-04:00
+# fly.toml app configuration file generated for notely on 2025-03-31T11:37:12-04:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -10,7 +10,6 @@ primary_region = 'yul'
 
 [deploy]
   release_command = 'npx prisma migrate deploy'
-
 
 [http_service]
   internal_port = 3000
