@@ -76,10 +76,18 @@ export default function LoginForm({ className, ...props }: React.ComponentPropsW
                   Login
                 </Button>
                 <FormErrors errors={form.errors} errorId={form.errorId} />
-                <div className="text-center text-sm">
-                  Don&apos;t have an account?{' '}
-                  <Link to="/sign-up" className="underline underline-offset-4">
-                    Sign up
+                <div className="grid  gap-6 text-center text-sm">
+                  <div>
+                    Don&apos;t have an account?{' '}
+                    <Link to="/sign-up" className="underline underline-offset-4">
+                      Sign up
+                    </Link>
+                  </div>
+                  <Link
+                    to="/privacy-policy"
+                    className=" text-center text-muted-foreground hover:text-foreground text-xs hover:underline underline-offset-4"
+                  >
+                    Privacy Policy
                   </Link>
                 </div>
               </div>

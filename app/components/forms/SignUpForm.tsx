@@ -57,10 +57,18 @@ export default function SignUpForm({ className, ...props }: React.ComponentProps
                 <ProviderConnectionForm providerName={providerName} type="Sign up" key={providerName} />
               ))}
             </div>
-            <div className="text-center text-sm">
-              Already have an account?{' '}
-              <Link to="/login" className="underline underline-offset-4">
-                Log in
+            <div className="grid text-sm gap-6">
+              <div className="text-center">
+                Already have an account?{' '}
+                <Link to="/login" className="underline underline-offset-4">
+                  Log in
+                </Link>
+              </div>
+              <Link
+                to="/privacy-policy"
+                className=" text-center text-muted-foreground hover:text-foreground text-xs hover:underline underline-offset-4"
+              >
+                Privacy Policy
               </Link>
             </div>
           </div>
