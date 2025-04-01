@@ -1,43 +1,73 @@
+import { H1, H2, ListItem, P, UnorderedList } from '~/components/typography';
+
 export default function PrivacyPolicyRoute() {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-3xl">
-      <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
+    <div className="container max-w-4xl my-6 space-y-12">
+      <H1>Privacy Policy</H1>
 
-      <section className="mb-6">
-        <h2 className="text-2xl font-semibold mb-3">1. Information We Collect</h2>
-        <p className="mb-3">When you use Notely, we collect:</p>
-        <ul className="list-disc ml-6 mb-3">
-          <li>Information you provide during account creation (name, email)</li>
-          <li>Information from Facebook when you choose to login with Facebook</li>
-        </ul>
+      <section>
+        <H2>1. Information I Collect</H2>
+        <P>When you use Notely, I collect:</P>
+        <UnorderedList>
+          <ListItem>
+            For standard email/password registration: Your name, email address, and securely hashed password
+          </ListItem>
+          <ListItem>
+            For Facebook authentication: Your public profile information from Facebook, including name, email address,
+            and Facebook ID
+          </ListItem>
+          <ListItem>
+            For Google authentication: Your basic profile information from Google, including name, email address, and
+            Google ID
+          </ListItem>
+          <ListItem>Usage data and interaction with our services</ListItem>
+        </UnorderedList>
       </section>
 
-      <section className="mb-6">
-        <h2 className="text-2xl font-semibold mb-3">2. How We Use Your Information</h2>
-        <p className="mb-3">We use the collected information to:</p>
-        <ul className="list-disc ml-6 mb-3">
-          <li>Provide and maintain our service</li>
-          <li>Authenticate your identity</li>
-          <li>Communicate with you about your account</li>
-        </ul>
+      <section>
+        <H2>2. How I Use Your Information</H2>
+        <P>I use the collected information to:</P>
+        <UnorderedList>
+          <ListItem>Authenticate your identity when you log in to your account</ListItem>
+          <ListItem>Store and manage your personal notes</ListItem>
+          <ListItem>Maintain the security of your account</ListItem>
+        </UnorderedList>
       </section>
 
-      <section className="mb-6">
-        <h2 className="text-2xl font-semibold mb-3">3. Data Security</h2>
-        <p>
-          We implement appropriate security measures to protect your personal information. However, no method of
-          transmission over the internet is 100% secure.
-        </p>
+      <section>
+        <H2>3. Third-Party Authentication</H2>
+        <P>When you choose to log in using third-party services (Facebook or Google):</P>
+        <UnorderedList>
+          <ListItem>I only request necessary permissions to authenticate you and create/access your account</ListItem>
+          <ListItem>
+            I do not post to your social media accounts or access additional information beyond what is required for
+            authentication
+          </ListItem>
+          <ListItem>
+            Your use of these third-party services is subject to their respective privacy policies and terms of service
+          </ListItem>
+        </UnorderedList>
       </section>
 
-      <section className="mb-6">
-        <h2 className="text-2xl font-semibold mb-3">4. Contact Us</h2>
-        <p>
-          If you have any questions about this Privacy Policy, please contact us at:{' '}
-          <a href="mailto:your-email@example.com" className="text-blue-600 hover:underline">
-            your-email@example.com
+      <section>
+        <H2>4. Data Security</H2>
+        <P>I implement appropriate security measures to protect your personal information, including:</P>
+        <UnorderedList>
+          <ListItem>Encryption of sensitive data in transit and at rest</ListItem>
+          <ListItem>Secure password hashing for standard authentication</ListItem>
+          <ListItem>However, please note that no method of transmission over the internet is 100% secure</ListItem>
+        </UnorderedList>
+      </section>
+
+      <section>
+        <H2>5. Contact Me</H2>
+        <P>
+          If you have any questions about this Privacy Policy or how I handle your authentication data, please contact
+          me:{' '}
+          <a href="mailto:matt@notely.ca" className="text-primary underline">
+            matt@notely.ca
           </a>
-        </p>
+        </P>
       </section>
     </div>
   );

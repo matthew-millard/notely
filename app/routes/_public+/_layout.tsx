@@ -4,8 +4,11 @@ import { useState } from 'react';
 import { Drawer, Footer } from '~/components/layouts';
 import { Logo } from '~/components/typography';
 import { Button, HamburgerMenuToggle } from '~/components/ui';
+import { useOptionalUser } from '~/hooks';
 
 export default function PublicLayout() {
+  const user = useOptionalUser();
+  const isLoggedIn = user !== null;
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const drawerProps = { isDrawerOpen, setIsDrawerOpen };
   return (
@@ -23,20 +26,24 @@ export default function PublicLayout() {
           </div>
 
           {/* Desktop */}
-          <nav className="hidden items-center gap-x-2 md:flex">
-            <Link to="/sign-up" prefetch="intent">
-              <Button>Sign up</Button>
-            </Link>
-            <Link to="/login" prefetch="intent">
-              <Button variant="ghost">
-                Log in <ArrowRightIcon />{' '}
-              </Button>
-            </Link>
-          </nav>
+          {isLoggedIn ? null : (
+            <nav className="hidden items-center gap-x-2 md:flex">
+              <Link to="/sign-up" prefetch="intent">
+                <Button>Sign up</Button>
+              </Link>
+              <Link to="/login" prefetch="intent">
+                <Button variant="ghost">
+                  Log in <ArrowRightIcon />{' '}
+                </Button>
+              </Link>
+            </nav>
+          )}
         </div>
       </header>
 
-      <Outlet />
+      <div className="flex flex-1">
+        <Outlet />
+      </div>
 
       <Footer />
     </div>

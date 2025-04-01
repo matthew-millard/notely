@@ -1,11 +1,12 @@
-interface H1Props extends React.ComponentPropsWithoutRef<"h1"> {
+import React from 'react';
+import { classNames as cn } from '~/utils';
+
+interface H1Props extends React.ComponentPropsWithoutRef<'h1'> {
   children: string;
 }
 
-export default function H1({ children }: H1Props) {
+export default function H1({ children, className }: H1Props) {
   return (
-    <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-      {children}
-    </h1>
+    <h1 className={cn('scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl', className)}>{children}</h1>
   );
 }

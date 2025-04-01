@@ -1,5 +1,7 @@
-interface PProps extends React.ComponentPropsWithoutRef<"p"> {
-  children: string;
+import React from 'react';
+
+interface PProps extends React.ComponentPropsWithoutRef<'p'> {
+  children: React.ReactNode;
 }
 
 export default function P({ children }: PProps) {
