@@ -59,8 +59,19 @@ export default function PrivacyPolicyRoute() {
         </UnorderedList>
       </section>
 
+      <section id="data-deletion">
+        <H2>5. Data Deletion</H2>
+        <P>How to delete your personal data:</P>
+        <UnorderedList>
+          <ListItem>
+            By deleting your account through the edit profile in the application, which will automatically remove all
+            your personal data and notes
+          </ListItem>
+        </UnorderedList>
+      </section>
+
       <section>
-        <H2>5. Contact Me</H2>
+        <H2>6. Contact Me</H2>
         <P>
           If you have any questions about this Privacy Policy or how I handle your authentication data, please contact
           me:{' '}
