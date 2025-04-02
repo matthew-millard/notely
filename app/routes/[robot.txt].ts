@@ -1,10 +1,7 @@
-export async function loader() {
-  const baseUrl = process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3000';
+import { ENV } from '~/.server/env';
 
-  if (!baseUrl) {
-    console.error('BASE_URL is not defined');
-    return new Response('Internal server error', { status: 500 });
-  }
+export async function loader() {
+  const baseUrl = process.env.NODE_ENV === 'production' ? ENV.BASE_URL : 'http://localhost:3000';
 
   const robotText = `User-agent: *
 Allow: /

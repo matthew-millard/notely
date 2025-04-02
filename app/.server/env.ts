@@ -8,6 +8,7 @@ const envSchema = z.object({
   FACEBOOK_CLIENT_SECRET: z.string(),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
+  BASE_URL: z.string().url(),
 });
 
 const env = envSchema.parse(process.env);
