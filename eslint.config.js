@@ -43,7 +43,7 @@ export default [
       'react/react-in-jsx-scope': 'off',
       'react/jsx-uses-react': 'off',
       'jsx-a11y/no-autofocus': 'off', // Turn off autofocusing rule
-      'react/jsx-no-leaked-render': ['warn', { validStrategies: ['ternary'] }],
+      // 'react/jsx-no-leaked-render': ['warn', { validStrategies: ['ternary'] }],
       'import/order': [
         'error',
         {

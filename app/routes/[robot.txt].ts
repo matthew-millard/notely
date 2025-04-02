@@ -1,7 +1,9 @@
-import { ENV } from '~/.server/env';
-
 export async function loader() {
-  const baseUrl = process.env.NODE_ENV === 'production' ? ENV.BASE_URL : 'http://localhost:3000';
+  const baseUrl = process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3000';
+
+  if (!baseUrl) {
+    throw new Error('BASE_URL environment variable is not set');
+  }
 
   const robotText = `User-agent: *
 Allow: /

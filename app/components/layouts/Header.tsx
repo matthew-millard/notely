@@ -1,5 +1,4 @@
 // import { useFetcher } from '@remix-run/react';
-import { Link } from '@remix-run/react';
 import { useState } from 'react';
 import { useKbdShortcut, useOptionalUser } from '~/hooks';
 // import { type SearchResults } from '~/routes/$userId_+/search';
@@ -30,9 +29,8 @@ export default function Header() {
   const notes = user?.notes;
   // Grab top three most recently edited notes - they are coming back from the database in descending order based on last updated
   const mostRecentNotes = notes?.slice(0, 3);
-  console.log('mostRecentNotes', mostRecentNotes);
+
   const allRemainingNotes = notes?.slice(3);
-  console.log('allRemainingNotes', allRemainingNotes);
 
   const [isCommandDialogOpen, setIsCommandDialogOpen] = useState(false);
   const [isEditProfileDialogOpen, setIsEditProfileDialogOpen] = useState(false);
@@ -67,40 +65,42 @@ export default function Header() {
             <CommandInput placeholder="Search notes..." />
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
-              <CommandGroup heading="Most Recent">
-                {mostRecentNotes?.map(note => (
-                  <CommandItem key={note.id}>
-                    <Link
-                      to={`/${user?.id}/notes/${note.id}`}
-                      prefetch="intent"
-                      className="flex justify-between w-full"
+              {mostRecentNotes && mostRecentNotes.length > 0 && (
+                <CommandGroup heading="Most Recent">
+                  {mostRecentNotes.map(note => (
+                    <CommandItem
+                      key={note.id}
+                      onSelect={() => {
+                        setIsCommandDialogOpen(false);
+                        window.location.href = `/${user?.id}/notes/${note.id}`;
+                      }}
                     >
-                      <span className="font-semibold">{note.title}</span>
-                      <span className="text-xs text-muted-foreground">{timeAgo(new Date(note.updatedAt))}</span>
-                    </Link>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-              <CommandGroup heading="All Other Notes">
-                {allRemainingNotes?.map(note => (
-                  <CommandItem
-                    key={note.id}
-                    // onSelect={() => {
-                    //   setIsCommandDialogOpen(false);
-                    //   // window.location.href = `/${user?.id}/notes/${note.id}`;
-                    // }}
-                  >
-                    <Link
-                      to={`/${user?.id}/notes/${note.id}`}
-                      prefetch="intent"
-                      className="flex justify-between w-full"
+                      <div className="flex justify-between w-full">
+                        <span className="font-semibold">{note.title}</span>
+                        <span className="text-xs text-muted-foreground">{timeAgo(new Date(note.updatedAt))}</span>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+              {allRemainingNotes && allRemainingNotes.length > 0 && (
+                <CommandGroup heading="More...">
+                  {allRemainingNotes?.map(note => (
+                    <CommandItem
+                      key={note.id}
+                      onSelect={() => {
+                        setIsCommandDialogOpen(false);
+                        window.location.href = `/${user?.id}/notes/${note.id}`;
+                      }}
                     >
-                      <span className="font-semibold">{note.title}</span>
-                      <span className="text-xs text-muted-foreground">{timeAgo(new Date(note.updatedAt))}</span>
-                    </Link>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
+                      <div className="flex justify-between w-full">
+                        <span className="font-semibold">{note.title}</span>
+                        <span className="text-xs text-muted-foreground">{timeAgo(new Date(note.updatedAt))}</span>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
             </CommandList>
           </CommandDialog>
 
