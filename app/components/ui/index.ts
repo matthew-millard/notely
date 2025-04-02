@@ -1,5 +1,16 @@
 import { Avatar, AvatarFallback, AvatarImage } from './Avatar';
 import { Button, buttonVariants } from './Button';
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandShortcut,
+  CommandSeparator,
+} from './Command';
 import CommandTrigger from './CommandTrigger';
 import {
   Dialog,
@@ -36,6 +47,15 @@ import { Separator } from './Separator';
 import Tooltip, { TooltipRoot, TooltipContent, TooltipProvider, TooltipTrigger } from './Tooltip';
 
 export {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandShortcut,
+  CommandSeparator,
   CommandTrigger,
   Button,
   buttonVariants,

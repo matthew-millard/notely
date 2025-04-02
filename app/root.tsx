@@ -46,6 +46,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
           firstName: true,
           lastName: true,
           avatarUrl: true,
+          notes: {
+            orderBy: {
+              updatedAt: 'desc',
+            },
+          },
         },
       })
     : null;
