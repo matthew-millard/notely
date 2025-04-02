@@ -64,7 +64,7 @@ export default function Header() {
           <CommandDialog open={isCommandDialogOpen} onOpenChange={setIsCommandDialogOpen}>
             <CommandInput placeholder="Search notes..." />
             <CommandList>
-              {notes.length > 0 ? (
+              {notes && notes.length > 0 ? (
                 <CommandEmpty>No results found.</CommandEmpty>
               ) : (
                 <CommandEmpty>You currently don&apos;t have any notes</CommandEmpty>
