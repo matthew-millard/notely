@@ -83,3 +83,54 @@ export default function PrivacyPolicyRoute() {
     </div>
   );
 }
+
+export const meta = () => {
+  const siteName = 'Notely';
+  const pageName = 'Privacy Policy';
+  const author = 'Matt Millard';
+  const description =
+    "Learn about Notely's privacy policy, how your information is collected, used, and how to delete your data.";
+  const ogImage = 'https://res.cloudinary.com/hospohub/image/upload/v1743565180/linkedin_2500px-3_l7jkux.jpg';
+  const ogAltText = 'Matt sitting at his computer coding.';
+
+  return [
+    // Basic Metadata
+    {
+      title: `${pageName} | ${siteName}`,
+    },
+    {
+      name: 'description',
+      content: description,
+    },
+    {
+      name: 'author',
+      content: author,
+    },
+
+    // Open Graph Metadata
+    {
+      name: 'og:title',
+      content: `${pageName} | ${siteName}`,
+    },
+    {
+      name: 'og:description',
+      content: description,
+    },
+    {
+      name: 'og:image',
+      content: ogImage,
+    },
+    {
+      name: 'og:image:alt',
+      content: ogAltText,
+    },
+    {
+      name: 'og:site_name',
+      content: siteName,
+    },
+    {
+      name: 'og:type',
+      content: 'website',
+    },
+  ];
+};

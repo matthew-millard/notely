@@ -38,3 +38,52 @@ export default function IndexRoute() {
     </main>
   );
 }
+
+export const meta = () => {
+  const siteName = 'Notely';
+  const author = 'Matt Millard';
+  const description = 'Your cloud-based digital notebook that keeps your notes safe, secure, and at your fingertips.';
+  const ogImage = 'https://res.cloudinary.com/hospohub/image/upload/v1743565180/linkedin_2500px-3_l7jkux.jpg';
+  const ogAltText = 'Matt sitting at his computer coding.';
+
+  return [
+    // Basic Metadata
+    {
+      title: siteName,
+    },
+    {
+      name: 'description',
+      content: description,
+    },
+    {
+      name: 'author',
+      content: author,
+    },
+
+    // Open Graph Metadata
+    {
+      name: 'og:title',
+      content: siteName,
+    },
+    {
+      name: 'og:description',
+      content: description,
+    },
+    {
+      name: 'og:image',
+      content: ogImage,
+    },
+    {
+      name: 'og:image:alt',
+      content: ogAltText,
+    },
+    {
+      name: 'og:site_name',
+      content: siteName,
+    },
+    {
+      name: 'og:type',
+      content: 'website',
+    },
+  ];
+};
