@@ -1,8 +1,10 @@
 import { getFormProps, getInputProps, type SubmissionResult, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { Form, Link, useActionData } from '@remix-run/react';
+import { LoaderCircle } from 'lucide-react';
 import React from 'react';
 import { z } from 'zod';
+import { useIsPending } from '~/hooks';
 import { classNames as cn } from '~/utils';
 import { Button, FieldError, FormErrors, Input, Label } from '../ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
@@ -14,6 +16,7 @@ export const LoginSchema = z.object({
 });
 
 export default function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+  const isPending = useIsPending();
   const [form, fields] = useForm({
     id: 'login-form',
     lastResult: useActionData<SubmissionResult<string[]>>(),
@@ -43,7 +46,7 @@ export default function LoginForm({ className, ...props }: React.ComponentPropsW
               <span className="relative z-10 bg-background px-2 text-muted-foreground">Or continue with</span>
             </div>
             <Form method="POST" {...getFormProps(form)}>
-              <div className="grid gap-6">
+              <div className="grid gap-6 mb-6">
                 <div className="grid gap-2">
                   <Label htmlFor={fields.email.id}>Email</Label>
                   <Input
@@ -72,8 +75,8 @@ export default function LoginForm({ className, ...props }: React.ComponentPropsW
                 </div>
               </div>
               <div className="grid gap-3">
-                <Button type="submit" className="-mt-1 w-full">
-                  Login
+                <Button type="submit" disabled={isPending} className="-mt-1 w-full">
+                  {isPending ? <LoaderCircle className="animate-spin" /> : 'Login'}
                 </Button>
                 <FormErrors errors={form.errors} errorId={form.errorId} />
                 <div className="grid  gap-6 text-center text-sm">

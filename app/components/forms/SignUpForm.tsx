@@ -1,8 +1,10 @@
 import { getFormProps, getInputProps, type SubmissionResult, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { Form, Link, useActionData } from '@remix-run/react';
+import { LoaderCircle } from 'lucide-react';
 import React from 'react';
 import { z } from 'zod';
+import { useIsPending } from '~/hooks';
 import { classNames as cn } from '~/utils';
 import { EmailSchema } from '~/utils/schemas';
 import { Button, FieldError, FormErrors, Input, Label } from '../ui';
@@ -14,6 +16,7 @@ export const SignUpSchema = z.object({
 });
 
 export default function SignUpForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+  const isPending = useIsPending();
   const [form, fields] = useForm({
     id: 'sign-up-form',
     constraint: getZodConstraint(SignUpSchema),
@@ -39,13 +42,13 @@ export default function SignUpForm({ className, ...props }: React.ComponentProps
             <Form method="POST" action="/sign-up" {...getFormProps(form)}>
               <div className="grid gap-2">
                 <Label htmlFor={fields.email.id}>Email</Label>
-                <Input {...getInputProps(fields.email, { type: 'email' })} placeholder="name@example.com" />
+                <Input {...getInputProps(fields.email, { type: 'email' })} placeholder="name@example.com" autoFocus />
                 <div>
                   <FieldError field={fields.email} />
                   <FormErrors errors={form.errors} errorId={form.errorId} />
                 </div>
-                <Button type="submit" className="-mt-1 w-full">
-                  Sign up
+                <Button type="submit" disabled={isPending} className="-mt-1 w-full">
+                  {isPending ? <LoaderCircle className="animate-spin" /> : 'Sign up'}
                 </Button>
               </div>
             </Form>

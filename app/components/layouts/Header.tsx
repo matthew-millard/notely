@@ -64,7 +64,11 @@ export default function Header() {
           <CommandDialog open={isCommandDialogOpen} onOpenChange={setIsCommandDialogOpen}>
             <CommandInput placeholder="Search notes..." />
             <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
+              {notes.length > 0 ? (
+                <CommandEmpty>No results found.</CommandEmpty>
+              ) : (
+                <CommandEmpty>You currently don&apos;t have any notes</CommandEmpty>
+              )}
               {mostRecentNotes && mostRecentNotes.length > 0 && (
                 <CommandGroup heading="Most Recent">
                   {mostRecentNotes.map(note => (
@@ -75,16 +79,16 @@ export default function Header() {
                         window.location.href = `/${user?.id}/notes/${note.id}`;
                       }}
                     >
-                      <div className="flex justify-between w-full">
+                      <div className="flex justify-between items-center w-full">
                         <span className="font-semibold">{note.title}</span>
-                        <span className="text-xs text-muted-foreground">{timeAgo(new Date(note.updatedAt))}</span>
+                        <span className="text-xs text-muted-foreground pr-2">{timeAgo(new Date(note.updatedAt))}</span>
                       </div>
                     </CommandItem>
                   ))}
                 </CommandGroup>
               )}
               {allRemainingNotes && allRemainingNotes.length > 0 && (
-                <CommandGroup heading="More...">
+                <CommandGroup heading="All Other Notes">
                   {allRemainingNotes?.map(note => (
                     <CommandItem
                       key={note.id}
@@ -93,9 +97,9 @@ export default function Header() {
                         window.location.href = `/${user?.id}/notes/${note.id}`;
                       }}
                     >
-                      <div className="flex justify-between w-full">
+                      <div className="flex justify-between w-full items-center">
                         <span className="font-semibold">{note.title}</span>
-                        <span className="text-xs text-muted-foreground">{timeAgo(new Date(note.updatedAt))}</span>
+                        <span className="text-xs text-muted-foreground pr-2">{timeAgo(new Date(note.updatedAt))}</span>
                       </div>
                     </CommandItem>
                   ))}
