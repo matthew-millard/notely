@@ -25,11 +25,7 @@ export const EditProfileSchema = z.object({
   lastName: LastNameSchema,
 });
 
-export default function EditProfile({
-  isEditProfileDialogOpen,
-  setIsEditProfileDialogOpen,
-  side = 'right',
-}: EditProfileProps) {
+export default function EditProfile({ isEditProfileDialogOpen, setIsEditProfileDialogOpen, side }: EditProfileProps) {
   const data = useRouteLoaderData<typeof loader>('root');
   const editProfileAction = `/${data?.user?.id}/edit-profile`;
   const deleteAccountAction = `/${data?.user?.id}/delete-account`;
@@ -53,8 +49,8 @@ export default function EditProfile({
   });
 
   return (
-    <Sheet open={isEditProfileDialogOpen} onOpenChange={setIsEditProfileDialogOpen} modal>
-      <SheetContent side={side}>
+    <Sheet open={isEditProfileDialogOpen} onOpenChange={setIsEditProfileDialogOpen}>
+      <SheetContent side={side} className="overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Edit profile</SheetTitle>
           <SheetDescription>Make changes to your profile here. Click save when you&apos;re done.</SheetDescription>

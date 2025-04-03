@@ -174,7 +174,6 @@ export default function Drawer({ isDrawerOpen, setIsDrawerOpen }: DrawerProps) {
                 <EditProfile
                   isEditProfileDialogOpen={isEditProfileDialogOpen}
                   setIsEditProfileDialogOpen={setIsEditProfileDialogOpen}
-                  side="bottom"
                 />
                 <button
                   type="button"

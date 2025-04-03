@@ -102,7 +102,7 @@ export default function NoteRoute() {
               <PenIcon className="h-8 w-8 hover:bg-accent p-2 hover:text-accent-foreground text-muted-foreground  gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0" />
             </Tooltip>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="overflow-scroll">
             <Form method="POST" action={updateNoteFormAction} {...getFormProps(form)}>
               <Input value={noteId} {...getInputProps(fields.noteId, { type: 'hidden' })} />
               <DialogHeader>
