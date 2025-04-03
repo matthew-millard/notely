@@ -71,7 +71,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function LoginRoute() {
   return (
-    <main className="flex flex-grow justify-center sm:py-24">
+    <main className="flex flex-grow justify-center pb-6 sm:py-24">
       <LoginForm />
     </main>
   );

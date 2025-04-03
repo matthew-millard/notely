@@ -174,7 +174,7 @@ export default function Drawer({ isDrawerOpen, setIsDrawerOpen }: DrawerProps) {
                 <EditProfile
                   isEditProfileDialogOpen={isEditProfileDialogOpen}
                   setIsEditProfileDialogOpen={setIsEditProfileDialogOpen}
-                  side="top"
+                  side="bottom"
                 />
                 <button
                   type="button"
@@ -216,7 +216,7 @@ export default function Drawer({ isDrawerOpen, setIsDrawerOpen }: DrawerProps) {
               </DrawerTitle>
               <DrawerDescription>Welcome to Notely</DrawerDescription>
             </DrawerHeader>
-            <nav className="flex flex-col gap-y-3 ">
+            <nav className="flex flex-col gap-y-3 pb-6">
               <Link to="/sign-up" prefetch="render">
                 <Button className="w-full">Sign up</Button>
               </Link>
@@ -226,7 +226,6 @@ export default function Drawer({ isDrawerOpen, setIsDrawerOpen }: DrawerProps) {
                 </Button>
               </Link>
             </nav>
-            <ThemeSwitch />
           </DrawerContent>
         )}
       </DrawerPortal>

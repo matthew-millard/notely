@@ -83,7 +83,7 @@ export default function CompleteProfileRoute() {
   });
 
   return (
-    <main className="flex-grow mx-auto py-6 sm:py-32">
+    <main className="flex-grow mx-auto pb-6 sm:py-32">
       <Card className="w-full sm:px-6">
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Complete profile</CardTitle>
@@ -105,13 +105,13 @@ export default function CompleteProfileRoute() {
 
             <fieldset className="grid gap-2 mb-3" disabled={isPending}>
               <Label htmlFor={fields.password.id}>Password</Label>
-              <Input {...getInputProps(fields.password, { type: 'password' })} />
+              <Input {...getInputProps(fields.password, { type: 'password' })} autoComplete="off" />
               <FieldError field={fields.password} />
             </fieldset>
 
             <fieldset className="grid gap-2 mb-6" disabled={isPending}>
               <Label htmlFor={fields.confirmPassword.id}>Confirm Password</Label>
-              <Input {...getInputProps(fields.confirmPassword, { type: 'password' })} />
+              <Input {...getInputProps(fields.confirmPassword, { type: 'password' })} autoComplete="off" />
               <FieldError field={fields.confirmPassword} />
             </fieldset>
 
