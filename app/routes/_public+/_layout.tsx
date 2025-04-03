@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Drawer, Footer } from '~/components/layouts';
 import { Logo } from '~/components/typography';
 import { Button, HamburgerMenuToggle } from '~/components/ui';
+import ThemeSwitch from '~/components/ui/ThemeSwitch';
 import { useOptionalUser } from '~/hooks';
 
 export default function PublicLayout() {
@@ -20,7 +21,8 @@ export default function PublicLayout() {
           </div>
 
           {/* Mobile */}
-          <div className="md:hidden">
+          <div className="md:hidden flex gap-2">
+            <ThemeSwitch />
             <HamburgerMenuToggle {...drawerProps} />
             <Drawer {...drawerProps} />
           </div>

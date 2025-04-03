@@ -104,7 +104,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function SignupRoute() {
   return (
-    <main className="flex flex-grow justify-center py-12 sm:py-36">
+    <main className="flex flex-grow justify-center pb-6 sm:py-36">
       <SignUpForm />
     </main>
   );
