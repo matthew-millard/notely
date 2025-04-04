@@ -1,40 +1,78 @@
-# Welcome to Remix!
+# Notely
 
-- 📖 [Remix docs](https://remix.run/docs)
+A portfolio project that is a note-taking application built with Remix, React, and TypeScript.
 
-## Development
+## Deployed Site
 
-Run the dev server:
+Check out [Notely!](https://notely.fly.dev)
 
-```shellscript
+## 🚀 Features
+
+- Modern, responsive UI built with React and Tailwind CSS and Shadcn
+- Authentication system with OAuth2 support (Google and Facebook)
+- Email integration using React Email and Resend
+- Real-time toast notifications using Sonner
+- Secure password handling with bcrypt
+- Form handling with Conform and Zod validation
+- Persistent data storage with Prisma with Postgres
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Remix](https://remix.run/)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: Radix UI/Shadcn
+- **Database ORM**: Prisma
+- **Database**: Postgres SQL
+- **Authentication**: OAuth & custom server-side authentication
+- **Deployment**: Fly.io
+- **Email Service**: Resend
+- **Form Handling**: Conform + Zod
+
+## 📦 Prerequisites
+
+- Node.js >= 20.0.0
+- npm or yarn
+- Docker (for development)
+
+## 🚀 Getting Started
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/matthew-millard/notely.git
+cd notely
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Set up environment variables:
+   Copy `.env.example` to `.env` and fill in the required values.
+
+4. Set up the database:
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+5. Start the development server:
+
+```bash
 npm run dev
 ```
 
-## Deployment
+## 📝 Scripts
 
-First, build your app for production:
+- `npm run dev` - Start the development server
+- `npm run build` - Build the production application
+- `npm run start` - Start the production server
+- `npm run email` - Start the email preview server
 
-```sh
-npm run build
-```
+## 🤝 Contributing
 
-Then run the app in production mode:
-
-```sh
-npm start
-```
-
-Now you'll need to pick a host to deploy it to.
-
-### DIY
-
-If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-- `build/server`
-- `build/client`
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.
+No contributions as this is a personal porfolio project. Feel free to fork it though 🙂
