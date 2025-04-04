@@ -90,9 +90,8 @@ export const meta = () => {
   const author = 'Matt Millard';
   const description =
     "Learn about Notely's privacy policy, how your information is collected, used, and how to delete your data.";
-  const ogImage =
-    'https://res.cloudinary.com/hospohub/image/upload/v1743782436/screen_shot_1024x1024_icon-1_iiipmf.png';
-  const ogAltText = 'Notley logo.';
+  const ogImage = 'https://res.cloudinary.com/hospohub/image/upload/v1743565180/linkedin_2500px-3_l7jkux.jpg';
+  const ogAltText = 'Matt sitting at his computer coding.';
 
   return [
     // Basic Metadata
@@ -110,27 +109,27 @@ export const meta = () => {
 
     // Open Graph Metadata
     {
-      name: 'og:title',
+      property: 'og:title',
       content: `${pageName} | ${siteName}`,
     },
     {
-      name: 'og:description',
+      property: 'og:description',
       content: description,
     },
     {
-      name: 'og:image',
+      property: 'og:image',
       content: ogImage,
     },
     {
-      name: 'og:image:alt',
+      property: 'og:image:alt',
       content: ogAltText,
     },
     {
-      name: 'og:site_name',
+      property: 'og:site_name',
       content: siteName,
     },
     {
-      name: 'og:type',
+      property: 'og:type',
       content: 'website',
     },
   ];

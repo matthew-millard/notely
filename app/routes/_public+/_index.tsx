@@ -49,42 +49,16 @@ export const meta = () => {
 
   return [
     // Basic Metadata
-    {
-      title: siteName,
-    },
-    {
-      name: 'description',
-      content: description,
-    },
-    {
-      name: 'author',
-      content: author,
-    },
+    { title: siteName },
+    { name: 'description', content: description },
+    { name: 'author', content: author },
 
     // Open Graph Metadata
-    {
-      name: 'og:title',
-      content: siteName,
-    },
-    {
-      name: 'og:description',
-      content: description,
-    },
-    {
-      name: 'og:image',
-      content: ogImage,
-    },
-    {
-      name: 'og:image:alt',
-      content: ogAltText,
-    },
-    {
-      name: 'og:site_name',
-      content: siteName,
-    },
-    {
-      name: 'og:type',
-      content: 'website',
-    },
+    { property: 'og:title', content: siteName },
+    { property: 'og:description', content: description },
+    { property: 'og:image', content: ogImage },
+    { property: 'og:image:alt', content: ogAltText },
+    { property: 'og:site_name', content: siteName },
+    { property: 'og:type', content: 'website' },
   ];
 };
