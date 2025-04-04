@@ -45,7 +45,7 @@ export const meta = () => {
   const description = 'Your cloud-based digital notebook that keeps your notes safe, secure, and at your fingertips.';
   const ogImage =
     'https://res.cloudinary.com/hospohub/image/upload/v1743782436/screen_shot_1024x1024_icon-1_iiipmf.png';
-  const ogAltText = 'Matt sitting at his computer coding.';
+  const ogAltText = 'Notley logo.';
 
   return [
     // Basic Metadata
