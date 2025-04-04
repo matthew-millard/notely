@@ -25,7 +25,7 @@ import {
   DialogContent,
   EditProfile,
 } from '../ui';
-import ThemeSwitch from '../ui/ThemeSwitch';
+// import ThemeSwitch from '../ui/ThemeSwitch';
 
 export interface DrawerProps {
   isDrawerOpen: boolean;
@@ -196,7 +196,7 @@ export default function Drawer({ isDrawerOpen, setIsDrawerOpen }: DrawerProps) {
                 </button>
 
                 <div className="flex gap-x-1">
-                  <ThemeSwitch />
+                  {/* <ThemeSwitch /> */}
                   <Form method="POST" action="/logout">
                     <Button variant="ghost" size="sm">
                       <ExitIcon />

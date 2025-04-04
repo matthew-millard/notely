@@ -19,6 +19,7 @@ import {
   EditProfile,
   HamburgerMenuToggle,
 } from '../ui';
+import ThemeSwitch from '../ui/ThemeSwitch';
 import Drawer from './Drawer';
 
 export default function Header() {
@@ -61,6 +62,7 @@ export default function Header() {
         </div>
         <div className="flex flex-1 items-center justify-between gap-2 md:justify-end">
           <CommandTrigger {...commandTriggerProps} />
+          <ThemeSwitch />
           <CommandDialog open={isCommandDialogOpen} onOpenChange={setIsCommandDialogOpen}>
             <CommandInput placeholder="Search notes..." />
             <CommandList>
