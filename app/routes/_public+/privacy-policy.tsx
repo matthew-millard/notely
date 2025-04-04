@@ -90,8 +90,9 @@ export const meta = () => {
   const author = 'Matt Millard';
   const description =
     "Learn about Notely's privacy policy, how your information is collected, used, and how to delete your data.";
-  const ogImage = 'https://res.cloudinary.com/hospohub/image/upload/v1743565180/linkedin_2500px-3_l7jkux.jpg';
-  const ogAltText = 'Matt sitting at his computer coding.';
+  const ogImage =
+    'https://res.cloudinary.com/hospohub/image/upload/v1743782436/screen_shot_1024x1024_icon-1_iiipmf.png';
+  const ogAltText = 'Notley logo.';
 
   return [
     // Basic Metadata

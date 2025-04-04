@@ -73,6 +73,11 @@ export default {
       animation: {
         'caret-blink': 'caret-blink 1.25s ease-out infinite',
       },
+      fontSize: {
+        huge: '300px',
+        giant: '72px',
+        massive: '10rem',
+      },
     },
   },
   plugins: [],
