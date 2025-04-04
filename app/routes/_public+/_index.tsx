@@ -42,7 +42,8 @@ export default function IndexRoute() {
 export const meta = () => {
   const siteName = 'Notely';
   const author = 'Matt Millard';
-  const description = 'Your cloud-based digital notebook that keeps your notes safe, secure, and at your fingertips.';
+  const description =
+    'Notely is your cloud-based digital notebook that keeps your notes safe, secure, and at your fingertips-completely free. Enjoy seamless synchronization across devices, a clean and intuitive interface, and peace of mind knowing your ideas are always within reach.';
   const ogImage =
     'https://res.cloudinary.com/hospohub/image/upload/v1743782436/screen_shot_1024x1024_icon-1_iiipmf.png';
   const ogAltText = 'Notley logo.';

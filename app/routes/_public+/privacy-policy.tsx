@@ -89,7 +89,8 @@ export const meta = () => {
   const pageName = 'Privacy Policy';
   const author = 'Matt Millard';
   const description =
-    "Learn about Notely's privacy policy, how your information is collected, used, and how to delete your data.";
+    'Notely is your cloud-based digital notebook that keeps your notes safe, secure, and at your fingertips-completely free. Enjoy seamless synchronization across devices, a clean and intuitive interface, and peace of mind knowing your ideas are always within reach.';
+
   const ogImage = 'https://res.cloudinary.com/hospohub/image/upload/v1743565180/linkedin_2500px-3_l7jkux.jpg';
   const ogAltText = 'Matt sitting at his computer coding.';
 
